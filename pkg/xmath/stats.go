@@ -26,6 +26,8 @@ type MADResult struct {
 //
 // //
 
+// FD computes the number of bins for a histogram using the Freedman-Diaconis
+// method applied to the given set of observations.
 func FD[V float64 | int64](values []V) float64 {
 	iqr := IQR(values)
 
@@ -40,6 +42,7 @@ func FD[V float64 | int64](values []V) float64 {
 	return 1
 }
 
+// IQR calculates the interquantile range of the given set of observations.
 func IQR[V float64 | int64](values []V) float64 {
 	midLeft := 0
 	midRight := 0
@@ -59,6 +62,7 @@ func IQR[V float64 | int64](values []V) float64 {
 	return q3 - q1
 }
 
+// MAD calculates the mean absolute deviation of the given set of observations.
 func MAD[V float64 | int64](values []V) MADResult {
 	sum := 0.0
 	mean := Mean(values)
@@ -70,6 +74,7 @@ func MAD[V float64 | int64](values []V) MADResult {
 	return MADResult{mean, sum / float64(len(values))}
 }
 
+// Mean calculates the mean of the given set of observation.
 func Mean[V float64 | int64](values []V) float64 {
 	var sum V
 
@@ -80,6 +85,7 @@ func Mean[V float64 | int64](values []V) float64 {
 	return float64(sum) / float64(len(values))
 }
 
+// Median calculates the median value for the given set of observation.
 func Median[V float64 | int64](values []V) float64 {
 	size := len(values)
 
@@ -93,6 +99,7 @@ func Median[V float64 | int64](values []V) float64 {
 	}
 }
 
+// Skewness returns the skewness of the given set of observations.
 func Skewness[V float64 | int64](values []V) SkewnessResult {
 	sum := float64(0)
 	res := StdDeviation(values)
@@ -108,6 +115,7 @@ func Skewness[V float64 | int64](values []V) SkewnessResult {
 	return SkewnessResult{res.Mean, res.StdDeviation, skew}
 }
 
+// StdDeviation returns the standard deviation of the given set of observations.
 func StdDeviation[V float64 | int64](values []V) StdDeviationResult {
 	sum := float64(0)
 	mean := Mean(values)
@@ -122,6 +130,8 @@ func StdDeviation[V float64 | int64](values []V) StdDeviationResult {
 	return StdDeviationResult{mean, std}
 }
 
+// Sturges computes the number of bins for a histogram using the Sturges
+// method applied to the given set of observations.
 func Sturges[V float64 | int64](values []V) float64 {
 	res := Ceil(1 + math.Log2(float64(len(values))))
 	return Max(res, 1)
