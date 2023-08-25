@@ -59,12 +59,12 @@ func intSafeFindBinWidth(values []int64) int64 {
 
 	res := intNumBinsToBinWidth(values, numBins)
 
-	return res.bw
+	return res.binWidth
 }
 
 type inb2bwResult struct {
-	avg int
-	bw  int64
+	avgDigits int
+	binWidth  int64
 }
 
 func intNumBinsToBinWidth(values []int64, numBins int) inb2bwResult {
@@ -72,13 +72,13 @@ func intNumBinsToBinWidth(values []int64, numBins int) inb2bwResult {
 
 	binWidth := float64(info.max-info.min) / float64(numBins)
 
-	return inb2bwResult{info.avg, xmath.CeilToInt(binWidth)}
+	return inb2bwResult{info.avgDigits, xmath.CeilToInt(binWidth)}
 }
 
 type intInfoResult struct {
-	min int64
-	max int64
-	avg int
+	min       int64
+	max       int64
+	avgDigits int
 }
 
 func intInfo(values []int64) intInfoResult {

@@ -33,7 +33,11 @@ func FD[V float64 | int64](values []V) float64 {
 		iqr = MAD(values).MAD
 	}
 
-	return Max(Ceil(2*iqr*math.Pow(float64(len(values)), -1.0/3.0)), 1)
+	if iqr > 0 {
+		return Ceil(float64(Diff(Range(values))) / (2 * iqr * math.Pow(float64(len(values)), -1.0/3.0)))
+	}
+
+	return 1
 }
 
 func IQR[V float64 | int64](values []V) float64 {

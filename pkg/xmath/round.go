@@ -39,7 +39,7 @@ func CeilToInt(x float64) int64 {
 
 func Ceil(x float64) float64 {
 	i := float64(int(x))
-	return xutil.IfElse(i == x, x, x+1)
+	return xutil.IfElse(i == x, x, i+1)
 }
 
 func NonZeroRound(value float64, digits int) float64 {

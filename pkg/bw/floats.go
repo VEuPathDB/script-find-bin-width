@@ -45,27 +45,27 @@ func FindFloatBinWidth(values []float64, rmNa bool) string {
 
 	res := floatNumBinsToBinWidth(values, numBins)
 
-	return strconv.FormatFloat(xmath.NonZeroRound(res.bw, res.avg), 'f', -1, 64)
+	return strconv.FormatFloat(xmath.NonZeroRound(res.binWidth, res.avgDigits), 'f', -1, 64)
 }
 
 type fnb2bwResult struct {
-	avg int
-	bw  float64
+	avgDigits int
+	binWidth  float64
 }
 
 func floatNumBinsToBinWidth(values []float64, numBins int) fnb2bwResult {
 	info := floatInfo(values)
 
-	numDigits := xutil.IfElse(info.avg > 6, 4, info.avg-1)
+	numDigits := xutil.IfElse(info.avgDigits > 6, 4, info.avgDigits-1)
 	binWidth := xmath.NonZeroRound(info.max-info.min, numDigits) / float64(numBins)
 
-	return fnb2bwResult{info.avg, binWidth}
+	return fnb2bwResult{info.avgDigits, binWidth}
 }
 
 type floatInfoResult struct {
-	min float64
-	max float64
-	avg int
+	min       float64
+	max       float64
+	avgDigits int
 }
 
 func floatInfo(values []float64) floatInfoResult {
