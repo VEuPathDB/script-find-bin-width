@@ -67,6 +67,7 @@ release-linux: build-linux
 		&& zip -9 fbw-linux-$(VERSION).zip find-bin-width \
 		&& mv fbw-linux-$(VERSION).zip ..
 
+
 ##
 #
 #  TEST TASKS
