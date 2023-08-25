@@ -122,6 +122,6 @@ func StdDeviation[V float64 | int64](values []V) StdDeviationResult {
 }
 
 func Sturges[V float64 | int64](values []V) float64 {
-	res := 1 + math.Log2(float64(len(values)))
+	res := Ceil(1 + math.Log2(float64(len(values))))
 	return Max(res, 1)
 }
