@@ -72,6 +72,10 @@ func intNumBinsToBinWidth(values []int64, numBins int) inb2bwResult {
 
 	binWidth := float64(info.max-info.min) / float64(numBins)
 
+	if numBins == 1 {
+		binWidth += 1
+	}
+
 	return inb2bwResult{info.avgDigits, xmath.CeilToInt(binWidth)}
 }
 
