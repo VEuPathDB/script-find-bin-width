@@ -6,6 +6,7 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
+// Round rounds the given value to the given number of decimal places.
 func Round(value float64, digits int) float64 {
 	if digits < 1 {
 		return HardRound(value)
@@ -17,10 +18,13 @@ func Round(value float64, digits int) float64 {
 	return HardRound(y) / m
 }
 
+// HardRound rounds the given value to the nearest whole number.
 func HardRound(value float64) float64 {
 	return float64(HardRoundToInt(value))
 }
 
+// HardRoundToInt rounds the given value to the nearest whole number and returns
+// the value as an int.
 func HardRoundToInt(value float64) int64 {
 	if value < 0 {
 		return int64(value - 0.5)
@@ -31,10 +35,6 @@ func HardRoundToInt(value float64) int64 {
 	}
 
 	return 0
-}
-
-func CeilToInt(x float64) int64 {
-	return int64(Ceil(x))
 }
 
 func Ceil(x float64) float64 {
