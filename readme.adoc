@@ -10,4 +10,3 @@ separated from the next by a single whitespace character (space, tab, newline,
 carriage return, or as a special case `\r\n`).
 
 Outputs the calculated bin width on stdout as the only output.
-
