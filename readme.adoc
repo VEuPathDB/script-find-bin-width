@@ -1,0 +1,13 @@
+= Find Bin Width
+
+Golang port of the https://github.com/VEuPathDB/plot.data[plot.data] function
+`findBinWidth` and its call tree.
+
+== Usage
+
+Accepts on `stdin` a series of int, float, or date values with each value
+separated from the next by a single whitespace character (space, tab, newline,
+carriage return, or as a special case `\r\n`).
+
+Outputs the calculated bin width on stdout as the only output.
+
