@@ -76,7 +76,7 @@ func intNumBinsToBinWidth(values []int64, numBins int) inb2bwResult {
 		binWidth += 1
 	}
 
-	return inb2bwResult{info.avgDigits, xmath.CeilToInt(binWidth)}
+	return inb2bwResult{info.avgDigits, int64(math.Round(binWidth))}
 }
 
 type intInfoResult struct {
