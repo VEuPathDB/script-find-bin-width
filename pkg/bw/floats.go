@@ -3,6 +3,7 @@ package bw
 import (
 	"sort"
 	"strconv"
+	"strings"
 
 	"find-bin-width/pkg/xmath"
 	"find-bin-width/pkg/xutil"
@@ -74,7 +75,11 @@ func floatInfo(values []float64) floatInfoResult {
 	a := values[0]
 
 	for _, v := range values {
-		sum += len(strconv.FormatFloat(v, 'f', -1, 64))
+		tmp := strconv.FormatFloat(v, 'f', -1, 64)
+		sum += len(tmp)
+		if strings.ContainsRune(tmp, '.') {
+			sum--
+		}
 
 		if v < i {
 			i = v
