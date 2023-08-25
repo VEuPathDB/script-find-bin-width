@@ -30,10 +30,7 @@ func FD[V float64 | int64](values []V) float64 {
 	iqr := IQR(values)
 
 	if iqr == 0 {
-		res := MAD(values)
-		if res.MAD != 0 {
-			iqr = res.MAD
-		}
+		iqr = MAD(values).MAD
 	}
 
 	return Max(Ceil(2*iqr*math.Pow(float64(len(values)), -1.0/3.0)), 1)
