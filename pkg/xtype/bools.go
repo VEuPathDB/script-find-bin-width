@@ -1,5 +1,6 @@
 package xtype
 
+// PseudoBool represents a boolean value that may also be NA.
 type PseudoBool = uint8
 
 const (
