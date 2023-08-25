@@ -29,3 +29,13 @@ func RequireReadBytes(r io.Reader, buffer []byte) int {
 
 	return red
 }
+
+func RequireOpen(path string) *os.File {
+	file, err := os.Open(path)
+
+	if err != nil {
+		log.Fatal("Failed to open file: " + err.Error())
+	}
+
+	return file
+}

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"find-bin-width/pkg/xmath"
+	"find-bin-width/pkg/xtype"
 	"find-bin-width/pkg/xutil"
 )
 
@@ -28,8 +29,8 @@ func FindFloatBinWidth(values []float64, rmNa bool) string {
 	}
 
 	if rmNa {
-		values = floatsRemoveNAs(values)
-	} else if floatsContainNA(values) {
+		values = xtype.FloatsRemoveNAs(values)
+	} else if xtype.FloatsContainNA(values) {
 		return ""
 	}
 

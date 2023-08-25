@@ -1,4 +1,4 @@
-package bw
+package xtype
 
 import (
 	"math"
@@ -10,7 +10,7 @@ var (
 	NaTime       = time.Date(1, 01, 01, 0, 0, 0, 0, time.UTC)
 )
 
-// intsContainNA tests whether the given slice of int64 values contain an NA
+// IntsContainNA tests whether the given slice of int64 values contain an NA
 // value.
 //
 // NA values are represented as the minimum int64 value -9223372036854775808.
@@ -19,7 +19,7 @@ var (
 //
 // @returns true if the slice of int64 values contains one or more NA values,
 // otherwise false.
-func intsContainNA(values []int64) bool {
+func IntsContainNA(values []int64) bool {
 	for _, v := range values {
 		if v == NaInt {
 			return true
@@ -29,7 +29,7 @@ func intsContainNA(values []int64) bool {
 	return false
 }
 
-// intsRemoveNAs returns a new slice of int64 values based on the given input
+// IntsRemoveNAs returns a new slice of int64 values based on the given input
 // slice, omitting any NA values present in the input slice.
 //
 // NA values are represented as the minimum int64 value -9223372036854775808.
@@ -38,7 +38,7 @@ func intsContainNA(values []int64) bool {
 //
 // @returns A new slice of integers based on the source slice with NA values
 // omitted.
-func intsRemoveNAs(values []int64) []int64 {
+func IntsRemoveNAs(values []int64) []int64 {
 	out := make([]int64, 0, len(values))
 
 	for _, v := range values {
@@ -50,7 +50,7 @@ func intsRemoveNAs(values []int64) []int64 {
 	return out
 }
 
-// floatsContainNA tests whether the given slice of float64 values contains an
+// FloatsContainNA tests whether the given slice of float64 values contains an
 // NA value.
 //
 // NA values are represented as the float64 value NaN.
@@ -59,7 +59,7 @@ func intsRemoveNAs(values []int64) []int64 {
 //
 // @returns true if the slice of float64 values contains one or more NA values,
 // otherwise false.
-func floatsContainNA(values []float64) bool {
+func FloatsContainNA(values []float64) bool {
 	for _, v := range values {
 		if math.IsNaN(v) {
 			return true
@@ -69,7 +69,7 @@ func floatsContainNA(values []float64) bool {
 	return false
 }
 
-// floatsRemoveNAs returns a new slice of float64 values based on the given
+// FloatsRemoveNAs returns a new slice of float64 values based on the given
 // input slice, omitting any NA values present in the input slice.
 //
 // NA values are represented as the float64 value NaN.
@@ -78,7 +78,7 @@ func floatsContainNA(values []float64) bool {
 //
 // @returns A new slice of floats based on the source slice with NA values
 // omitted.
-func floatsRemoveNAs(values []float64) []float64 {
+func FloatsRemoveNAs(values []float64) []float64 {
 	out := make([]float64, 0, len(values))
 
 	for _, v := range values {
@@ -90,7 +90,7 @@ func floatsRemoveNAs(values []float64) []float64 {
 	return out
 }
 
-// datesContainNA tests whether the given slice of date values contains an NA
+// DatesContainNA tests whether the given slice of date values contains an NA
 // value.
 //
 // NA values are represented as the date 0001-01-01T00:00:00.0Z.
@@ -99,7 +99,7 @@ func floatsRemoveNAs(values []float64) []float64 {
 //
 // @returns true if the given slice contains one or more NA values, otherwise
 // false.
-func datesContainNA(values []time.Time) bool {
+func DatesContainNA(values []time.Time) bool {
 	for i := range values {
 		if values[i] == NaTime {
 			return true
@@ -109,7 +109,7 @@ func datesContainNA(values []time.Time) bool {
 	return false
 }
 
-// datesRemoveNAs returns a new slice of date values based on the given input
+// DatesRemoveNAs returns a new slice of date values based on the given input
 // slice, omitting any NA values present in the input slice.
 //
 // NA values are represented as the date 0001-01-01T00:00:00.0Z.
@@ -118,7 +118,7 @@ func datesContainNA(values []time.Time) bool {
 //
 // @returns A new slice of dates based on the source slice with NA values
 // omitted.
-func datesRemoveNAs(values []time.Time) []time.Time {
+func DatesRemoveNAs(values []time.Time) []time.Time {
 	out := make([]time.Time, 0, len(values))
 
 	for i := range values {

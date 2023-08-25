@@ -1,20 +1,27 @@
 package xos
 
 import (
-	"os"
+	"io"
 	"strings"
 
 	"find-bin-width/pkg/xstr"
 )
 
-func ReadStdinWords() []string {
+// ReadWords reads the entirety of the given input stream and splits the
+// contents into string words on whitespace.
+//
+// For example, given the input (note the extra space between 3 and 4):
+//   1 2 3  4 5
+// The output would be
+//  ["1", "2", "3", "", "4", "5"]
+func ReadWords(input io.Reader) []string {
 	readBuffer := [4096]byte{}
 	holdBuffer := new(strings.Builder)
 	values := make([]string, 0, 2048)
 	lwcr := false
 
 	for true {
-		red := RequireReadBytes(os.Stdin, readBuffer[:])
+		red := RequireReadBytes(input, readBuffer[:])
 		cur := byte(0)
 
 		for i := 0; i < red; i++ {

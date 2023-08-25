@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"find-bin-width/pkg/xmath"
+	"find-bin-width/pkg/xtype"
 )
 
 // FindDateBinWidth determines the bin width for a series of date values.
@@ -21,8 +22,8 @@ import (
 // represented as an empty string.
 func FindDateBinWidth(values []time.Time, rmNa bool) string {
 	if rmNa {
-		values = datesRemoveNAs(values)
-	} else if datesContainNA(values) {
+		values = xtype.DatesRemoveNAs(values)
+	} else if xtype.DatesContainNA(values) {
 		return ""
 	}
 

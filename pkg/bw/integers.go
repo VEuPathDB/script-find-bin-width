@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"find-bin-width/pkg/xmath"
+	"find-bin-width/pkg/xtype"
 )
 
 // FindIntegerBinWidth determines the bin width for a series of integral values.
@@ -24,7 +25,7 @@ import (
 func FindIntegerBinWidth(values []int64, rmNa bool) string {
 	out := intFindBinWidth(values, rmNa)
 
-	if out == NaInt {
+	if out == xtype.NaInt {
 		return ""
 	}
 
@@ -37,9 +38,9 @@ func intFindBinWidth(values []int64, rmNa bool) int64 {
 	}
 
 	if rmNa {
-		values = intsRemoveNAs(values)
-	} else if intsContainNA(values) {
-		return NaInt
+		values = xtype.IntsRemoveNAs(values)
+	} else if xtype.IntsContainNA(values) {
+		return xtype.NaInt
 	}
 
 	return intSafeFindBinWidth(values)
