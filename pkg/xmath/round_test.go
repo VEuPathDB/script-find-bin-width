@@ -1,8 +1,9 @@
 package xmath_test
 
 import (
-	"find-bin-width/pkg/xmath"
 	"testing"
+
+	"find-bin-width/pkg/xmath"
 )
 
 func TestHardRoundToInt(t *testing.T) {
