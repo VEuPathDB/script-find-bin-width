@@ -33,7 +33,7 @@ func FindDateBinWidth(values []time.Time, rmNa bool) string {
 		return "day"
 	}
 
-	binWidth := intSafeFindBinWidth(intValues)
+	binWidth := intSafeFindBinWidth(intValues) / 86400
 
 	if binWidth > 365 {
 		return "year"
