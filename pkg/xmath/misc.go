@@ -1,19 +1,13 @@
 package xmath
 
-func Max[V float64 | int64](a, b V) V {
-	if a > b {
-		return a
-	}
+import "find-bin-width/pkg/xutil"
 
-	return b
+func Max[V float64 | int64](a, b V) V {
+	return xutil.IfElse(a > b, a, b)
 }
 
 func Min[V float64 | int64](a, b V) V {
-	if a > b {
-		return b
-	}
-
-	return a
+	return xutil.IfElse(a < b, a, b)
 }
 
 func UniqueN[V float64 | int64](values []V) int {
