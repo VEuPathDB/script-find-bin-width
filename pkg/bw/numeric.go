@@ -30,5 +30,5 @@ func findNumBins[V float64 | int64](values []V) int {
 		numBins = xmath.Sturges(values)
 	}
 
-	return int(xmath.CeilToInt(numBins))
+	return int(math.Round(numBins))
 }
