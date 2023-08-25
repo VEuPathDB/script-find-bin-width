@@ -5,8 +5,13 @@ Golang port of the https://github.com/VEuPathDB/plot.data[plot.data] function
 
 == Usage
 
-Accepts on `stdin` a series of int, float, or date values with each value
+Accepts on `stdin` a series of int, float, or date* values with each value
 separated from the next by a single whitespace character (space, tab, newline,
 carriage return, or as a special case `\r\n`).
 
 Outputs the calculated bin width on stdout as the only output.
+
+.+*+ Date values must be in one of the following formats:
+* 2023-11-01
+* 2023-11-01T03:00:00
+* 2023-11-01T03:00:00.0Z (RFC-3339)
