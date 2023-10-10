@@ -1,4 +1,4 @@
-package bw
+package stats
 
 import (
 	"math"
@@ -7,6 +7,7 @@ import (
 
 	"find-bin-width/pkg/xmath"
 	"find-bin-width/pkg/xtype"
+	"find-bin-width/pkg/xutil"
 )
 
 // FindIntegerBinWidth determines the bin width for a series of integral values.
@@ -22,50 +23,70 @@ import (
 //
 // @returns A string representation of the bin width.  NA return values will be
 // represented as an empty string.
-func FindIntegerBinWidth(values []int64, rmNa bool) string {
+func FindIntegerBinWidth(values []int64, rmNa bool) Stats {
 	out := intFindBinWidth(values, rmNa)
 
-	if out == xtype.NaInt {
-		return ""
+	if out.max == xtype.NaInt {
+		return Stats{}
 	}
 
-	return strconv.FormatInt(out, 10)
+	return Stats{
+		Min:           strconv.FormatInt(out.min, 10),
+		Max:           strconv.FormatInt(out.max, 10),
+		BinWidth:      strconv.FormatInt(out.binWidth, 10),
+		Mean:          strconv.FormatFloat(xmath.Mean(values), 'f', -1, 64),
+		Median:        strconv.FormatFloat(xmath.Median(values), 'f', -1, 64),
+		LowerQuartile: strconv.FormatFloat(xmath.LowerQuartile(values), 'f', -1, 64),
+		UpperQuartile: strconv.FormatFloat(xmath.UpperQuartile(values), 'f', -1, 64),
+	}
 }
 
-func intFindBinWidth(values []int64, rmNa bool) int64 {
+func intFindBinWidth(values []int64, rmNa bool) inb2bwResult {
 	if len(values) == 0 {
-		return 0
+		return inb2bwResult{}
 	}
 
 	if rmNa {
 		values = xtype.IntsRemoveNAs(values)
 	} else if xtype.IntsContainNA(values) {
-		return xtype.NaInt
+		return inb2bwResult{
+			min:      xtype.NaInt,
+			max:      xtype.NaInt,
+			binWidth: xtype.NaInt,
+		}
 	}
 
 	return intSafeFindBinWidth(values)
 }
 
-func intSafeFindBinWidth(values []int64) int64 {
+func intSafeFindBinWidth(values []int64) inb2bwResult {
 	if xmath.UniqueN(values) == 1 {
-		return 1
+		mnx := xutil.IfElse(len(values) == 0, 0, values[0])
+		return inb2bwResult{
+			min:      mnx,
+			max:      mnx,
+			binWidth: 1,
+		}
 	}
 
 	sort.Slice(values, func(i, j int) bool { return values[i] < values[j] })
 
 	numBins := findNumBins(values)
 	if numBins == 0 {
-		return 0
+		return inb2bwResult{}
 	}
 
 	res := intNumBinsToBinWidth(values, numBins)
 
-	return res.binWidth
+	return res
 }
 
+// Num-Bins 2 Bin-Width ////////////////////////////////////////////////////////
+
 type inb2bwResult struct {
-	avgDigits int
-	binWidth  int64
+	min      int64
+	max      int64
+	binWidth int64
 }
 
 func intNumBinsToBinWidth(values []int64, numBins int) inb2bwResult {
@@ -77,8 +98,14 @@ func intNumBinsToBinWidth(values []int64, numBins int) inb2bwResult {
 		binWidth += 1
 	}
 
-	return inb2bwResult{info.avgDigits, int64(math.Round(binWidth))}
+	return inb2bwResult{
+		min:      info.min,
+		max:      info.max,
+		binWidth: int64(math.Round(binWidth)),
+	}
 }
+
+// Int Info ////////////////////////////////////////////////////////////////////
 
 type intInfoResult struct {
 	min       int64

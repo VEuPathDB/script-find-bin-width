@@ -1,4 +1,4 @@
-package bw
+package stats
 
 import (
 	"math"

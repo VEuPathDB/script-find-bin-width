@@ -1,6 +1,7 @@
-package bw
+package stats
 
 import (
+	"fmt"
 	"io"
 	"log"
 
@@ -8,11 +9,32 @@ import (
 	"find-bin-width/pkg/xtype"
 )
 
-func FindBinWidth(input io.Reader, rmNa bool) string {
+type Stats struct {
+	Min           string
+	Max           string
+	BinWidth      string
+	Mean          string
+	Median        string
+	LowerQuartile string
+	UpperQuartile string
+}
+
+func (s Stats) String() string {
+	return fmt.Sprintf(
+		"%s\t%s\t%s\t%s\t%s\t%s\t%s",
+		s.Min,
+		s.Max,
+		s.BinWidth,
+		s.Mean,
+		s.Median,
+		s.LowerQuartile,
+		s.UpperQuartile,
+	)
+}
+
+func Calculate(input io.Reader, rmNa bool) Stats {
 	values := xos.ReadWords(input)
 	dataType := xtype.FindDataType(values)
-
-	var out string
 
 	switch dataType {
 
@@ -21,30 +43,26 @@ func FindBinWidth(input io.Reader, rmNa bool) string {
 	case xtype.DataTypeInteger:
 		ints := xtype.ToIntegers(values)
 		values = nil
-		out = FindIntegerBinWidth(ints, rmNa)
-		break
+		return FindIntegerBinWidth(ints, rmNa)
 
 	case xtype.DataTypeFloat:
 		floats := xtype.ToFloats(values)
 		values = nil
-		out = FindFloatBinWidth(floats, rmNa)
-		break
+		return FindFloatBinWidth(floats, rmNa)
 
 	case xtype.DataTypeDate:
 		dates := xtype.ToDates(values)
 		values = nil
-		out = FindDateBinWidth(dates, rmNa)
-		break
+		return FindDateBinWidth(dates, rmNa)
 
 	case xtype.DataTypeBoolean:
 		bools := xtype.ToBools(values)
 		values = nil
-		out = FindBooleanBinWidth(bools, rmNa)
-		break
+		return FindBooleanBinWidth(bools, rmNa)
 
 	default:
 		log.Fatalln("unrecognized or mixed data types passed on stdin")
 	}
 
-	return out
+	return Stats{}
 }

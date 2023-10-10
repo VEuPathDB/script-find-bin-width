@@ -1,4 +1,4 @@
-package bw
+package stats
 
 func ifElse[V interface{}](cond bool, a V, b V) V {
 	if cond {

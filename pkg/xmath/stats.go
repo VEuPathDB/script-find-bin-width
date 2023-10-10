@@ -42,6 +42,36 @@ func FD[V float64 | int64](values []V) float64 {
 	return 1
 }
 
+func UpperQuartile[V float64 | int64](values []V) float64 {
+	n := float64(len(values) + 1)
+	n *= 0.75
+
+	c := Ceil(n)
+	// If we landed dead on a value
+	if c == n {
+		return float64(values[int64(n)])
+	}
+
+	// If we landed between two values
+	l, u := float64(values[int64(Floor(n))]), float64(values[int64(c)])
+
+	return (l + u) / 2
+}
+
+func LowerQuartile[V float64 | int64](values []V) float64 {
+	n := float64(len(values) + 1)
+	n *= 0.25
+	f := Floor(n)
+
+	if n == f {
+		return float64(values[int64(n)])
+	}
+
+	l, u := float64(values[int64(f)]), float64(values[int64(Ceil(n))])
+
+	return (l + u) / 2
+}
+
 // IQR calculates the interquantile range of the given set of observations.
 func IQR[V float64 | int64](values []V) float64 {
 	midLeft := 0

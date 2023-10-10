@@ -42,6 +42,10 @@ func Ceil(x float64) float64 {
 	return xutil.IfElse(i == x, x, i+1)
 }
 
+func Floor(x float64) float64 {
+	return float64(int64(x))
+}
+
 func NonZeroRound(value float64, digits int) float64 {
 	if value == 0 {
 		return 0

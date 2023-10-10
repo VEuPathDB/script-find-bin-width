@@ -5,24 +5,22 @@ import (
 
 	cli "github.com/Foxcapades/Argonaut/v0"
 
-	"find-bin-width/pkg/bw"
+	"find-bin-width/pkg/stats"
 	"find-bin-width/pkg/xos"
 )
 
 func main() {
 	config := parseArgs()
-	result := ""
-
 	if config.file == "" {
-		result = bw.FindBinWidth(os.Stdin, config.rmNa)
+		result := stats.Calculate(os.Stdin, config.rmNa)
+		xos.RequireWriteString(os.Stdout, result.String())
 	} else {
 		file := xos.RequireOpen(config.file)
 		defer file.Close()
 
-		result = bw.FindBinWidth(file, config.rmNa)
+		result := stats.Calculate(file, config.rmNa)
+		xos.RequireWriteString(os.Stdout, result.String())
 	}
-
-	xos.RequireWriteString(os.Stdout, result)
 }
 
 type cliConfig struct {
