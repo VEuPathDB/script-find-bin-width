@@ -1,7 +1,6 @@
 package stats
 
 import (
-	"fmt"
 	"io"
 	"log"
 
@@ -17,19 +16,8 @@ type Stats struct {
 	Median        string
 	LowerQuartile string
 	UpperQuartile string
-}
 
-func (s Stats) String() string {
-	return fmt.Sprintf(
-		"%s\t%s\t%s\t%s\t%s\t%s\t%s",
-		s.Min,
-		s.Max,
-		s.BinWidth,
-		s.Mean,
-		s.Median,
-		s.LowerQuartile,
-		s.UpperQuartile,
-	)
+	IsText bool
 }
 
 func Calculate(input io.Reader, rmNa bool) Stats {

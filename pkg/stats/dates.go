@@ -65,6 +65,7 @@ func FindDateBinWidth(values []time.Time, rmNa bool) Stats {
 			Median:        med,
 			LowerQuartile: low,
 			UpperQuartile: upp,
+			IsText:        true,
 		}
 	} else if binWidth > 31 {
 		return Stats{
@@ -75,6 +76,7 @@ func FindDateBinWidth(values []time.Time, rmNa bool) Stats {
 			Median:        med,
 			LowerQuartile: low,
 			UpperQuartile: upp,
+			IsText:        true,
 		}
 	} else if binWidth > 7 {
 		return Stats{
@@ -85,6 +87,7 @@ func FindDateBinWidth(values []time.Time, rmNa bool) Stats {
 			Median:        med,
 			LowerQuartile: low,
 			UpperQuartile: upp,
+			IsText:        true,
 		}
 	} else {
 		return Stats{
@@ -95,6 +98,7 @@ func FindDateBinWidth(values []time.Time, rmNa bool) Stats {
 			Median:        med,
 			LowerQuartile: low,
 			UpperQuartile: upp,
+			IsText:        true,
 		}
 	}
 }
