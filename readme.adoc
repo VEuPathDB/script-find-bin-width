@@ -70,8 +70,9 @@ set, will cause the tool to read the input data from the target file rather than
 
 ===== Expectations
 
-Accepts a series of int, float, or date¹ values on `stdin` with each value being
-separated from the next by a single whitespace² character.
+Expects a series of int, float, or date¹ values either on `stdin`, or from a
+provided file, with each value being separated from the next by a single
+whitespace² character.
 
 ¹ Dates must be in the RFC-3339 format or one of the following formats:
 `2023-11-01` or `2023-11-01T03:00:00` +
