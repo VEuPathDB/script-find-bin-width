@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	cli "github.com/Foxcapades/Argonaut/v0"
+	cli "github.com/Foxcapades/Argonaut"
 
 	"find-bin-width/pkg/stats"
 	"find-bin-width/pkg/xos"
@@ -95,28 +95,21 @@ func (c cliConfig) validate() {
 }
 
 func parseArgs() (conf cliConfig) {
-	cli.NewCommand().
-		Flag(cli.NewFlag().
-			Long("rm-na").
-			Short('r').
-			Description("Whether NA values (empty strings on input) should be ignored.  If this is not set, or is set to false, data sets containing NA values will result in an NA value being returned.").
-			Bind(&conf.rmNa, false)).
-		Flag(cli.NewFlag().
-			Long("format").
-			Short('f').
-			Description("Output format.  Valid options are tsv, csv, or json").
-			Default("tsv").
-			Bind(&conf.format, true)).
-		Flag(cli.NewFlag().
-			Long("headers").
-			Short('t').
-			Description("Whether the header/title line should be included in the output.  Only applies to tsv and csv formats, ignored for json.").
-			Bind(&conf.header, false)).
-		Arg(cli.NewArg().
-			Name("file").
-			Description("File to read data from.  If omitted, data will be read from stdin.").
-			Bind(&conf.file)).
-		MustParse()
+	cli.Command().
+		WithFlag(cli.ComboFlag('r', "rm-na").
+			WithDescription("Whether NA values (empty strings on input) should be ignored.  If this is not set, or is set to false, data sets containing NA values will result in an NA value being returned.").
+			WithBinding(&conf.rmNa, false)).
+		WithFlag(cli.ComboFlag('f', "format").
+			WithDescription("Output format.  Valid options are tsv, csv, or json").
+			WithBindingAndDefault(&conf.format, "tsv", true)).
+		WithFlag(cli.ComboFlag('t', "headers").
+			WithDescription("Whether the header/title line should be included in the output.  Only applies to tsv and csv formats, ignored for json.").
+			WithBinding(&conf.header, false)).
+		WithArgument(cli.Argument().
+			WithName("file").
+			WithDescription("File to read data from.  If omitted, data will be read from stdin.").
+			WithBinding(&conf.file)).
+		MustParse(os.Args)
 
 	return
 }

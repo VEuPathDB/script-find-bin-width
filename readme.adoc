@@ -1,20 +1,92 @@
 = Find Bin Width
+:icons: font
 
 Golang port of the https://github.com/VEuPathDB/plot.data[plot.data] function
 `findBinWidth` and its call tree.
 
 == Usage
 
-=== Input
+[source]
+----
+Usage:
+  find-bin-width [options] [file]
 
-Excepts a series of int, float, or date¹ values on `stdin` with each value being
+Flags
+  -r | --rm-na
+      Whether NA values (empty strings on input) should be ignored.  If this is not set, or is set
+      to false, data sets containing NA values will result in an NA value being returned.
+  -f <arg> | --format=<arg>
+      Output format.  Valid options are tsv, csv, or json
+  -t | --headers
+      Whether the header/title line should be included in the output.  Only applies to tsv and csv
+      formats, ignored for json.
+  -h | --help
+      Prints this help text.
+
+Arguments
+  [file]
+      File to read data from.  If omitted, data will be read from stdin.
+----
+
+[WARNING]
+--
+Due to a bug in the CLI parsing, if a file is being provided, the flags should
+appear after that file in the CLI call.
+
+.Example
+[source, console]
+----
+$ find-bin-width some/file -rtf csv
+----
+--
+
+=== Inputs
+
+==== Data
+
+Data may be passed to the `find-bin-width` over `stdin` or provided via file.
+
+The command line call expects an optional filepath positional argument that, if
+set, will cause the tool to read the input data from the target file rather than
+`stdin`.
+
+===== Expectations
+
+Accepts a series of int, float, or date¹ values on `stdin` with each value being
 separated from the next by a single whitespace² character.
 
 ¹ Dates must be in the RFC-3339 format or one of the following formats:
- `2023-11-01` or `2023-11-01T03:00:00` +
+`2023-11-01` or `2023-11-01T03:00:00` +
 ² Whitespace characters are space, tab, line feed (`\n`), carriage return
 (`\r`), or the combination `\r\n`.
 
+==== Options
+
+.Flags
+[%header, cols="1m,1m,8"]
+|===
+| Flag | Argument | Description
+
+| -f \| --format
+| ENUM(tsv, csv, json)
+| Configures the output format in which the results will be printed to `stdout`.
+
+Defaults to `tsv`.
+
+| -r \| --rm-na
+| boolean
+| Whether NA values (empty strings on input) should be ignored.  If this is not
+set, or is set to false, data sets containing one or more NA values will result
+in a single NA value being returned from the CLI call.
+
+| -t \| --headers
+| boolean
+| Include a header/title line in the output. +
+This option only applies to the `csv` and `tsv` formats and will be ignored for
+`json` output.
+
+Defaults to `false`.
+|===
 
 === Output
 
