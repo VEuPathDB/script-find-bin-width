@@ -1,8 +1,26 @@
 = Find Bin Width
 :icons: font
+:script-version: 0.5.0
 
 Golang port of the https://github.com/VEuPathDB/plot.data[plot.data] function
 `findBinWidth` and its call tree.
+
+== Get the Script
+
+The script may be downloaded from the
+https://github.com/VEuPathDB/script-find-bin-width/releases/tag/v{script-version}[releases page].
+
+.Curl on Linux
+[source, console, subs="attributes"]
+----
+$ curl https://github.com/VEuPathDB/script-find-bin-width/releases/download/v{script-version}/fbw-linux-{script-version}.zip -L -o fbw.zip
+----
+
+.Curl on Mac
+[source, console, subs="attributes"]
+----
+$ curl https://github.com/VEuPathDB/script-find-bin-width/releases/download/v{script-version}/fbw-darwin-{script-version}.zip -L -o fbw.zip
+----
 
 == Usage
 
