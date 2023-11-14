@@ -1,6 +1,6 @@
 = Find Bin Width
 :icons: font
-:script-version: 0.5.0
+:script-version: 0.5.1
 
 Golang port of the https://github.com/VEuPathDB/plot.data[plot.data] function
 `findBinWidth` and its call tree.
@@ -46,17 +46,6 @@ Arguments
       File to read data from.  If omitted, data will be read from stdin.
 ----
 
-[WARNING]
---
-Due to a bug in the CLI parsing, if a file is being provided, the flags should
-appear after that file in the CLI call.
-
-.Example
-[source, console]
-----
-$ find-bin-width some/file -rtf csv
-----
---
 
 === Inputs
 
