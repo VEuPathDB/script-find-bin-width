@@ -22,6 +22,11 @@ type Stats struct {
 
 func Calculate(input io.Reader, rmNa bool) Stats {
 	values := xos.ReadWords(input)
+
+	if len(values) < 4 {
+		log.Fatalln("input must contain at least 4 elements")
+	}
+
 	dataType := xtype.FindDataType(values)
 
 	switch dataType {

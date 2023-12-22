@@ -43,6 +43,10 @@ func FD[V float64 | int64](values []V) float64 {
 }
 
 func UpperQuartile[V float64 | int64](values []V) float64 {
+	if len(values) == 4 {
+		return float64(values[2]+values[3]) / 2
+	}
+
 	n := float64(len(values) + 1)
 	n *= 0.75
 
@@ -59,6 +63,10 @@ func UpperQuartile[V float64 | int64](values []V) float64 {
 }
 
 func LowerQuartile[V float64 | int64](values []V) float64 {
+	if len(values) == 4 {
+		return float64(values[0]+values[1]) / 2
+	}
+
 	n := float64(len(values) + 1)
 	n *= 0.25
 	f := Floor(n)

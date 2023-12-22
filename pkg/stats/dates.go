@@ -8,7 +8,7 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
-const dateFormat = "2006-01-02T15:04:05"
+const dateFormat = "2006-01-02"
 
 // FindDateBinWidth determines the bin width for a series of date values.
 //
@@ -34,7 +34,7 @@ func FindDateBinWidth(values []time.Time, rmNa bool) Stats {
 	values = nil
 
 	if xmath.UniqueN(intValues) == 1 {
-		mnx := time.Unix(xutil.IfElse(len(values) == 0, 0, intValues[0]), 0).Format(dateFormat)
+		mnx := time.Unix(xutil.IfElse(len(intValues) == 0, 0, intValues[0]), 0).Format(dateFormat)
 		return Stats{
 			Min:           mnx,
 			Max:           mnx,
