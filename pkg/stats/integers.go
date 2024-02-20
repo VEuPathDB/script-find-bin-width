@@ -3,63 +3,42 @@ package stats
 import (
 	"math"
 	"sort"
-	"strconv"
 
 	"find-bin-width/pkg/xmath"
 	"find-bin-width/pkg/xtype"
 	"find-bin-width/pkg/xutil"
 )
 
-// FindIntegerBinWidth determines the bin width for a series of integral values.
+// findIntegerBinWidth determines the bin width for a series of integral values.
 //
 // Returns a string representation of the bin width for the given series of
 // values.  An NA bin width is represented as an empty string.
 //
 // @param values Series of values for which the bin width should be calculated.
 //
-// @param rmNa Whether NA values should be removed from the input series.  If
-// this value is false and the input series contains one or more NA values, an
-// empty string will be returned.
-//
 // @returns A string representation of the bin width.  NA return values will be
 // represented as an empty string.
-func FindIntegerBinWidth(values []int64, rmNa bool) Stats {
-	out := intFindBinWidth(values, rmNa)
+func findIntegerBinWidth(values []int64) Stats {
+	out := intFindBinWidth(values)
 
-	if out.max == xtype.NaInt {
-		return Stats{}
-	}
-
-	return Stats{
-		Min:           strconv.FormatInt(out.min, 10),
-		Max:           strconv.FormatInt(out.max, 10),
-		BinWidth:      strconv.FormatInt(out.binWidth, 10),
-		Mean:          strconv.FormatFloat(xmath.Mean(values), 'f', -1, 64),
-		Median:        strconv.FormatFloat(xmath.Median(values), 'f', -1, 64),
-		LowerQuartile: strconv.FormatFloat(xmath.LowerQuartile(values), 'f', -1, 64),
-		UpperQuartile: strconv.FormatFloat(xmath.UpperQuartile(values), 'f', -1, 64),
+	return stats[float64]{
+		min:           float64(out.min),
+		max:           float64(out.max),
+		binWidth:      float64(out.binWidth),
+		mean:          xmath.Mean(values),
+		median:        xmath.Median(values),
+		lowerQuartile: xmath.LowerQuartile(values),
+		upperQuartile: xmath.UpperQuartile(values),
+		stringifier:   intStringifier,
+		dataType:      xtype.DataTypeInteger,
 	}
 }
 
-func intFindBinWidth(values []int64, rmNa bool) inb2bwResult {
+func intFindBinWidth(values []int64) inb2bwResult {
 	if len(values) == 0 {
 		return inb2bwResult{}
 	}
 
-	if rmNa {
-		values = xtype.IntsRemoveNAs(values)
-	} else if xtype.IntsContainNA(values) {
-		return inb2bwResult{
-			min:      xtype.NaInt,
-			max:      xtype.NaInt,
-			binWidth: xtype.NaInt,
-		}
-	}
-
-	return intSafeFindBinWidth(values)
-}
-
-func intSafeFindBinWidth(values []int64) inb2bwResult {
 	if xmath.UniqueN(values) == 1 {
 		mnx := xutil.IfElse(len(values) == 0, 0, values[0])
 		return inb2bwResult{

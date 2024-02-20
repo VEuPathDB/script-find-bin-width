@@ -1,41 +1,23 @@
 package xos
 
 import (
-	"io"
-	"log"
-	"os"
+	"bufio"
 )
 
-func RequireWriteString(w *os.File, v string) int {
-	written, err := w.WriteString(v)
-
-	if err != nil {
-		log.Fatal("Failed to write string to io stream " + err.Error())
+func BufWriteString(stream *bufio.Writer, text string) {
+	if _, err := stream.WriteString(text); err != nil {
+		panic(err)
 	}
-
-	return written
 }
 
-func RequireReadBytes(r io.Reader, buffer []byte) int {
-	red, err := r.Read(buffer)
-
-	if err == io.EOF {
-		return red
+func BufWriteBytes(stream *bufio.Writer, value []byte) {
+	if _, err := stream.Write(value); err != nil {
+		panic(err)
 	}
-
-	if err != nil {
-		log.Fatal("Failed to read bytes from reader " + err.Error())
-	}
-
-	return red
 }
 
-func RequireOpen(path string) *os.File {
-	file, err := os.Open(path)
-
-	if err != nil {
-		log.Fatal("Failed to open file: " + err.Error())
+func BufWriteByte(stream *bufio.Writer, value byte) {
+	if err := stream.WriteByte(value); err != nil {
+		panic(err)
 	}
-
-	return file
 }

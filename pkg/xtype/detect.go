@@ -4,7 +4,7 @@ import (
 	"regexp"
 )
 
-type DataType byte
+type DataType uint8
 
 const (
 	DataTypeUndecided DataType = 0
@@ -27,9 +27,15 @@ func (t DataType) String() string {
 		return "float"
 	case DataTypeDate:
 		return "date"
+	case DataTypeBoolean:
+		return "boolean"
 	default:
 		return "invalid data type"
 	}
+}
+
+func (t DataType) IsValid() bool {
+	return t < 6
 }
 
 var (
@@ -40,44 +46,29 @@ var (
 	intRgx      = regexp.MustCompile(`^-?\d+$`)
 )
 
-func FindDataType(values []string) DataType {
-	if len(values) == 0 {
-		return DataTypeUndecided
+func FindDataType(value string, assumption DataType) DataType {
+	if len(value) == 0 {
+		return assumption
 	}
 
-	t := DataTypeUndecided
-
-	for _, v := range values {
-
-		if v == "" {
-			continue
-		}
-
-		switch t {
-		case DataTypeFloat:
-			t = stateFloat(v)
-		case DataTypeInteger:
-			t = stateInteger(v)
-		case DataTypeDate:
-			t = stateDate(v)
-		case DataTypeBoolean:
-			t = stateBool(v)
-		case DataTypeUndecided:
-			t = stateUndecided(v)
-		}
-
-		if t == DataTypeUnknown {
-			break
-		}
+	switch assumption {
+	case DataTypeFloat:
+		return stateFloat(value)
+	case DataTypeInteger:
+		return stateInteger(value)
+	case DataTypeDate:
+		return stateDate(value)
+	case DataTypeBoolean:
+		return stateBool(value)
+	case DataTypeUndecided:
+		return stateUndecided(value)
+	default:
+		return DataTypeUnknown
 	}
-
-	return t
 }
 
 func stateUndecided(value string) DataType {
-	if len(value) == 0 {
-		return DataTypeUndecided
-	} else if intRgx.MatchString(value) {
+	if intRgx.MatchString(value) {
 		return DataTypeInteger
 	} else if floatRgx.MatchString(value) {
 		return DataTypeFloat

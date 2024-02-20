@@ -18,3 +18,9 @@ func IfElse[V interface{}](condition bool, ifTrue V, ifFalse V) V {
 		return ifFalse
 	}
 }
+
+func Must(err error) {
+	if err != nil {
+		panic(err)
+	}
+}

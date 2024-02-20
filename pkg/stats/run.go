@@ -2,60 +2,22 @@ package stats
 
 import (
 	"io"
-	"log"
 
-	"find-bin-width/pkg/xos"
-	"find-bin-width/pkg/xtype"
+	"find-bin-width/pkg/input"
 )
 
-type Stats struct {
-	Min           string
-	Max           string
-	BinWidth      string
-	Mean          string
-	Median        string
-	LowerQuartile string
-	UpperQuartile string
-
-	IsText bool
+func CalculateUnsorted(stream io.Reader, rmNa bool) (ResultIterator, error) {
+	if it, err := input.CollectAndSortGroups(stream, rmNa, input.TabDelimiterSplitFn()); err != nil {
+		return ResultIterator{}, err
+	} else {
+		return ResultIterator{it}, nil
+	}
 }
 
-func Calculate(input io.Reader, rmNa bool) Stats {
-	values := xos.ReadWords(input)
-
-	if len(values) < 4 {
-		log.Fatalln("input must contain at least 4 elements")
+func CalculateSorted(stream io.Reader, rmNa bool) (ResultIterator, error) {
+	if it, err := input.StreamGroups(stream, rmNa, input.TabDelimiterSplitFn()); err != nil {
+		return ResultIterator{}, err
+	} else {
+		return ResultIterator{it}, nil
 	}
-
-	dataType := xtype.FindDataType(values)
-
-	switch dataType {
-
-	case xtype.DataTypeUndecided:
-		fallthrough
-	case xtype.DataTypeInteger:
-		ints := xtype.ToIntegers(values)
-		values = nil
-		return FindIntegerBinWidth(ints, rmNa)
-
-	case xtype.DataTypeFloat:
-		floats := xtype.ToFloats(values)
-		values = nil
-		return FindFloatBinWidth(floats, rmNa)
-
-	case xtype.DataTypeDate:
-		dates := xtype.ToDates(values)
-		values = nil
-		return FindDateBinWidth(dates, rmNa)
-
-	case xtype.DataTypeBoolean:
-		bools := xtype.ToBools(values)
-		values = nil
-		return FindBooleanBinWidth(bools, rmNa)
-
-	default:
-		log.Fatalln("unrecognized or mixed data types passed on stdin")
-	}
-
-	return Stats{}
 }

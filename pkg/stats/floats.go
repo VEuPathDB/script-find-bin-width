@@ -10,48 +10,32 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
-// FindFloatBinWidth determines the bin width for a series of float values.
+// findFloatBinWidth determines the bin width for a series of float values.
 //
 // Returns a string representation of the bin width for the given series of
 // values.  An NA bin width is represented as an empty string.
 //
 // @param values Series of values for which the bin width should be calculated.
 //
-// @param rmNa Whether NA values should be removed from the input series.  If
-// this value is false and the input series contains one or more NA values, an
-// empty string will be returned.
-//
 // @returns A string representation of the bin width.  NA return values will be
 // represented as an empty string.
-func FindFloatBinWidth(values []float64, rmNa bool) Stats {
+func findFloatBinWidth(values []float64) Stats {
 	if len(values) == 0 {
-		return Stats{
-			Min:           "0",
-			Max:           "0",
-			BinWidth:      "0",
-			Mean:          "0",
-			Median:        "0",
-			LowerQuartile: "0",
-			UpperQuartile: "0",
-		}
-	}
-
-	if rmNa {
-		values = xtype.FloatsRemoveNAs(values)
-	} else if xtype.FloatsContainNA(values) {
-		return Stats{}
+		return stats[float64]{stringifier: floatStringifier}
 	}
 
 	if xmath.UniqueN(values) == 1 {
-		mnx := strconv.FormatFloat(xutil.IfElse(len(values) == 0, 0, values[0]), 'f', -1, 64)
-		return Stats{
-			Min:           mnx,
-			Max:           mnx,
-			BinWidth:      "0",
-			Mean:          mnx,
-			Median:        mnx,
-			LowerQuartile: mnx,
-			UpperQuartile: mnx,
+		mnx := values[0]
+		return stats[float64]{
+			min:           mnx,
+			max:           mnx,
+			binWidth:      0,
+			mean:          mnx,
+			median:        mnx,
+			lowerQuartile: mnx,
+			upperQuartile: mnx,
+			stringifier:   floatStringifier,
+			dataType:      xtype.DataTypeFloat,
 		}
 	}
 
@@ -59,27 +43,21 @@ func FindFloatBinWidth(values []float64, rmNa bool) Stats {
 
 	numBins := findNumBins(values)
 	if numBins == 0 {
-		return Stats{
-			Min:           "0",
-			Max:           "0",
-			BinWidth:      "0",
-			Mean:          "0",
-			Median:        "0",
-			LowerQuartile: "0",
-			UpperQuartile: "0",
-		}
+		return stats[float64]{stringifier: floatStringifier}
 	}
 
 	res := floatNumBinsToBinWidth(values, numBins)
 
-	return Stats{
-		Min:           strconv.FormatFloat(res.min, 'f', -1, 64),
-		Max:           strconv.FormatFloat(res.max, 'f', -1, 64),
-		BinWidth:      strconv.FormatFloat(xmath.NonZeroRound(res.binWidth, res.avgDigits), 'f', -1, 64),
-		Mean:          strconv.FormatFloat(xmath.Mean(values), 'f', -1, 64),
-		Median:        strconv.FormatFloat(xmath.Median(values), 'f', -1, 64),
-		LowerQuartile: strconv.FormatFloat(xmath.LowerQuartile(values), 'f', -1, 64),
-		UpperQuartile: strconv.FormatFloat(xmath.UpperQuartile(values), 'f', -1, 64),
+	return stats[float64]{
+		min:           res.min,
+		max:           res.max,
+		binWidth:      xmath.NonZeroRound(res.binWidth, res.avgDigits),
+		mean:          xmath.Mean(values),
+		median:        xmath.Median(values),
+		lowerQuartile: xmath.LowerQuartile(values),
+		upperQuartile: xmath.UpperQuartile(values),
+		stringifier:   floatStringifier,
+		dataType:      xtype.DataTypeFloat,
 	}
 }
 

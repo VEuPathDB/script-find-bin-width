@@ -1,115 +1,86 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"bufio"
 	"os"
+	"strconv"
 
-	cli "github.com/Foxcapades/Argonaut"
-
+	"find-bin-width/pkg/cmd"
+	"find-bin-width/pkg/output"
 	"find-bin-width/pkg/stats"
-	"find-bin-width/pkg/xos"
 )
 
 func main() {
-	config := parseArgs()
-	config.validate()
+	config := cmd.ParseCliArgs(os.Args)
 
-	var result stats.Stats
+	var result stats.ResultIterator
+	var err error
+	var file *os.File
 
-	if config.file == "" {
-		result = stats.Calculate(os.Stdin, config.rmNa)
+	if config.InputFile == "" {
+		file = os.Stdin
 	} else {
-		file := xos.RequireOpen(config.file)
-		defer file.Close()
-
-		result = stats.Calculate(file, config.rmNa)
+		file, err = os.Open(config.InputFile)
+		if err != nil {
+			badExit(err.Error())
+		}
+		defer func(file *os.File) { _ = file.Close() }(file)
 	}
 
-	switch config.format {
-	case "tsv":
-		printTSV(&result, &config)
-	case "csv":
-		printCSV(&result, &config)
-	case "json":
-		printJSON(&result)
-	default:
-		fmt.Print(result)
-	}
-}
-
-func printCSV(s *stats.Stats, c *cliConfig) {
-	if c.header {
-		fmt.Println("Min,Max,BinWidth,Mean,Median,Q1,Q3")
-	}
-	fmt.Printf("%s,%s,%s,%s,%s,%s,%s", s.Min, s.Max, s.BinWidth, s.Mean, s.Median, s.LowerQuartile, s.UpperQuartile)
-}
-
-func printTSV(s *stats.Stats, c *cliConfig) {
-	if c.header {
-		fmt.Println("Min\tMax\tBinWidth\tMean\tMedian\tQ1\tQ3")
-	}
-	fmt.Printf("%s\t%s\t%s\t%s\t%s\t%s\t%s", s.Min, s.Max, s.BinWidth, s.Mean, s.Median, s.LowerQuartile, s.UpperQuartile)
-}
-
-func printJSON(s *stats.Stats) {
-	if s.IsText {
-		fmt.Printf(
-			`{"min":"%s","max":"%s","binWidth":"%s","mean":"%s","median":"%s","q1":"%s","q3":"%s"}`,
-			s.Min,
-			s.Max,
-			s.BinWidth,
-			s.Mean,
-			s.Median,
-			s.LowerQuartile,
-			s.UpperQuartile,
-		)
+	if config.InputsAreSorted {
+		result, err = stats.CalculateSorted(file, config.RemoveNAValues)
 	} else {
-		fmt.Printf(
-			`{"min":%s,"max":%s,"binWidth":%s,"mean":%s,"median":%s,"q1":%s,"q3":%s}`,
-			s.Min,
-			s.Max,
-			s.BinWidth,
-			s.Mean,
-			s.Median,
-			s.LowerQuartile,
-			s.UpperQuartile,
-		)
+		result, err = stats.CalculateUnsorted(file, config.RemoveNAValues)
 	}
-}
 
-type cliConfig struct {
-	rmNa   bool
-	file   string
-	format string
-	header bool
-}
+	if err != nil {
+		badExit(err.Error())
+	}
 
-func (c cliConfig) validate() {
-	switch c.format {
-	case "tsv", "csv", "json":
-		break
+	var formatter output.Formatter
+
+	writer := bufio.NewWriter(os.Stdout)
+
+	switch config.OutputFormat {
+	case output.FormatTSV:
+		formatter = output.DSVFormatter(writer, output.DSVFormatConfig{
+			Delimiter:     "\t",
+			LineSeparator: "\n",
+			WriteHeaders:  config.PrintHeaders,
+		})
+	case output.FormatCSV:
+		formatter = output.DSVFormatter(writer, output.DSVFormatConfig{
+			Delimiter:     ",",
+			LineSeparator: "\n",
+			WriteHeaders:  config.PrintHeaders,
+		})
+	case output.FormatJSON:
+		formatter = output.JsonFormatter(writer, output.JsonFormatConfig{
+			FieldNameFormat: output.FieldNameFormatCamel,
+		})
+	case output.FormatJSONL:
+		formatter = output.JsonLinesFormatter(writer, output.JsonLinesFormatterConfig{
+			FieldNameFormat:     output.FieldNameFormatCamel,
+			LineSeparator:       "\n",
+			PrintFieldNameArray: config.PrintHeaders,
+		})
 	default:
-		log.Fatal("Unrecognized format value.  Must be one of tsv, csv, or json")
+		badExit("illegal state: unrecognized config format " + strconv.Itoa(int(config.OutputFormat)))
 	}
+
+	formatter.Open()
+	for result.HasNext() {
+		if res, err := result.Next(); err != nil {
+			badExit(err.Error())
+		} else {
+			formatter.Write(res)
+		}
+	}
+
+	formatter.Finalize()
 }
 
-func parseArgs() (conf cliConfig) {
-	cli.Command().
-		WithFlag(cli.ComboFlag('r', "rm-na").
-			WithDescription("Whether NA values (empty strings on input) should be ignored.  If this is not set, or is set to false, data sets containing NA values will result in an NA value being returned.").
-			WithBinding(&conf.rmNa, false)).
-		WithFlag(cli.ComboFlag('f', "format").
-			WithDescription("Output format.  Valid options are tsv, csv, or json").
-			WithBindingAndDefault(&conf.format, "tsv", true)).
-		WithFlag(cli.ComboFlag('t', "headers").
-			WithDescription("Whether the header/title line should be included in the output.  Only applies to tsv and csv formats, ignored for json.").
-			WithBinding(&conf.header, false)).
-		WithArgument(cli.Argument().
-			WithName("file").
-			WithDescription("File to read data from.  If omitted, data will be read from stdin.").
-			WithBinding(&conf.file)).
-		MustParse(os.Args)
-
-	return
+func badExit(msg string) {
+	_, _ = os.Stderr.WriteString(msg)
+	os.Exit(1)
 }

@@ -45,3 +45,17 @@ func MustParseDate(value string) time.Time {
 
 	return out
 }
+
+func MustParseBool(value string) bool {
+	switch value[0] {
+
+	case 't', 'T', 'y', 'Y', '1':
+		return true
+
+	case 'f', 'F', 'n', 'N', '0':
+		return false
+
+	default:
+		panic("unexpected non-boolean value: " + value)
+	}
+}
