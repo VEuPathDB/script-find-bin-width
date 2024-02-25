@@ -82,7 +82,7 @@ func floatNumBinsToBinWidth(values []float64, numBins int) fnb2bwResult {
 	numDigits := xutil.IfElse(info.avgDigits > 6, 4, info.avgDigits-1)
 	binWidth := xmath.NonZeroRound(info.max-info.min, numDigits) / float64(numBins)
 
-	return fnb2bwResult{min: info.min, max: info.max, avgDigits: info.avgDigits, binWidth: binWidth}
+	return fnb2bwResult{min: info.min, max: info.max, avgDigits: numDigits, binWidth: binWidth}
 }
 
 type floatInfoResult struct {
