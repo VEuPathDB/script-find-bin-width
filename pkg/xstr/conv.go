@@ -26,24 +26,18 @@ func MustParseFloat64(value string) float64 {
 	return out
 }
 
+const (
+	isoOrder = "2006-01-02"
+)
+
 func MustParseDate(value string) time.Time {
-	var tmp string
-
-	if len(value) == 10 {
-		tmp = value + "T00:00:00.0Z"
-	} else if len(value) == 19 {
-		tmp = value + "Z"
-	} else {
-		tmp = value
-	}
-
-	out, err := time.Parse(time.RFC3339, tmp)
+	t, err := time.Parse(isoOrder, value)
 
 	if err != nil {
 		log.Fatal("failed to convert string " + value + " to date")
 	}
 
-	return out
+	return time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), time.Local)
 }
 
 func MustParseBool(value string) bool {

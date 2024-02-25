@@ -1,7 +1,7 @@
 package output
 
 type FieldNameBuffer = [64]byte
-type FieldValueBuffer = [64]byte
+type FieldValueBuffer = [256]byte
 
 type FieldType uint8
 

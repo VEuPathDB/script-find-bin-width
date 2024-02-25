@@ -1,5 +1,10 @@
 package xutil
 
+import (
+	"fmt"
+	"math"
+)
+
 // IfElse returns either the value of "ifTrue" or "ifFalse" depending on whether
 // the given "condition" value is true or false.
 //
@@ -23,4 +28,47 @@ func Must(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func MustReturn[T any](value T, err error) T {
+	if err != nil {
+		panic(err)
+	}
+	return value
+}
+
+func StringToUint16(value string) (out uint16) {
+	l := len(value)
+
+	for i := 0; i < min(l, 4); i++ {
+		out *= 10
+		out += uint16(value[i] - '0')
+	}
+
+	if l == 5 {
+		if math.MaxUint16/10 < out {
+			panic(fmt.Sprintf("value %s would overflow the type uint16", value))
+		}
+
+		out *= 10
+		tmp := uint16(value[4] - '0')
+
+		if math.MaxUint16-tmp < out {
+			panic(fmt.Sprintf("value %s would overflow the type uint16", value))
+		}
+
+		out += tmp
+	} else if l > 5 {
+		panic(fmt.Sprintf("value %s would overflow the type uint16", value))
+	}
+
+	return
+}
+
+func CharIsNumeric(b byte) bool {
+	return !(b < '0' || b > '9')
+}
+
+func CharIsNumberNoMoreThan(b, max byte) bool {
+	return !(b < '0' || b > max)
 }

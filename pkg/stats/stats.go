@@ -7,6 +7,7 @@ import (
 
 	"find-bin-width/pkg/output"
 	"find-bin-width/pkg/xtype"
+	"find-bin-width/pkg/xutil"
 )
 
 type Stats interface {
@@ -45,17 +46,36 @@ var fieldNames = [...]string{
 	"upper_quartile",
 }
 
-func intStringifier(buf *output.FieldValueBuffer, i float64, f statField) int {
+func intStringifier(buf *output.FieldValueBuffer, raw any, f statField) int {
 	switch f {
+
 	case statFieldMin, statFieldMax, statFieldBinWidth:
-		return copy(buf[:], strconv.FormatInt(int64(i), 10))
+		return copy(buf[:], strconv.FormatInt(int64(raw.(float64)), 10))
+
+	case statFieldLowerQuartile, statFieldUpperQuartile:
+		field := raw.(NullablePrimitive[float64])
+		if field.IsNull() {
+			return 0
+		}
+
+		return copy(buf[:], strconv.FormatFloat(xutil.MustReturn(field.AsFloat()), 'f', -1, 64))
+
 	default:
-		return copy(buf[:], strconv.FormatFloat(i, 'f', -1, 64))
+		return copy(buf[:], strconv.FormatFloat(raw.(float64), 'f', -1, 64))
 	}
 }
 
-func floatStringifier(buf *output.FieldValueBuffer, f float64, _ statField) int {
-	return copy(buf[:], strconv.FormatFloat(f, 'f', -1, 64))
+func floatStringifier(buf *output.FieldValueBuffer, raw any, f statField) int {
+	if f == statFieldLowerQuartile || f == statFieldUpperQuartile {
+		field := raw.(NullablePrimitive[float64])
+		if field.IsNull() {
+			return 0
+		}
+
+		return copy(buf[:], strconv.FormatFloat(xutil.MustReturn(field.AsFloat()), 'f', -1, 64))
+	}
+
+	return copy(buf[:], strconv.FormatFloat(raw.(float64), 'f', -1, 64))
 }
 
 const dateFormat = "2006-01-02"
@@ -74,9 +94,9 @@ const sWeek = "week"
 const sMonth = "month"
 const sYear = "year"
 
-func dateStringifier(buf *output.FieldValueBuffer, i int64, f statField) int {
+func dateStringifier(buf *output.FieldValueBuffer, raw any, f statField) int {
 	if f == statFieldBinWidth {
-		switch i {
+		switch raw.(int64) {
 		case dateBinWidthDay:
 			return copy(buf[:], sDay)
 		case dateBinWidthWeek:
@@ -90,18 +110,27 @@ func dateStringifier(buf *output.FieldValueBuffer, i int64, f statField) int {
 		}
 	}
 
-	return copy(buf[:], time.Unix(i, 0).Format(dateFormat))
+	if f == statFieldLowerQuartile || f == statFieldUpperQuartile {
+		field := raw.(NullablePrimitive[int64])
+		if field.IsNull() {
+			return 0
+		}
+
+		return copy(buf[:], time.Unix(xutil.MustReturn(field.AsInt()), 0).Format(dateFormat))
+	}
+
+	return copy(buf[:], time.Unix(raw.(int64), 0).Format(dateFormat))
 }
 
-type stats[T any] struct {
+type stats[T float64 | int64 | bool] struct {
 	min           T
 	max           T
 	binWidth      T
 	mean          T
 	median        T
-	lowerQuartile T
-	upperQuartile T
-	stringifier   func(buf *output.FieldValueBuffer, value T, field statField) int
+	lowerQuartile NullablePrimitive[T]
+	upperQuartile NullablePrimitive[T]
+	stringifier   func(buf *output.FieldValueBuffer, value any, field statField) int
 	dataType      xtype.DataType
 }
 

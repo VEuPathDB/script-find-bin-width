@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	cli "github.com/Foxcapades/Argonaut"
@@ -42,6 +43,9 @@ func ParseCliArgs(args []string) (config Config) {
 			WithDescription(fDesc).
 			WithBindingAndDefault(func(val string) (err error) {
 				config.OutputFormat, err = output.ParseFormat(val)
+				if err != nil {
+					_, _ = fmt.Fprint(os.Stderr, err.Error())
+				}
 				return
 			}, "tsv", true)).
 		WithFlag(cli.ComboFlag('t', "headers").

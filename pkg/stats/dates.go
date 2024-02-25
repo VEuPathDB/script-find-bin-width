@@ -24,8 +24,8 @@ func findDateBinWidth(values []int64) stats[int64] {
 			binWidth:      dateBinWidthDay,
 			mean:          mnx,
 			median:        mnx,
-			lowerQuartile: mnx,
-			upperQuartile: mnx,
+			lowerQuartile: NullablePrimitive[int64]{},
+			upperQuartile: NullablePrimitive[int64]{},
 			stringifier:   dateStringifier,
 			dataType:      xtype.DataTypeDate,
 		}
@@ -36,8 +36,14 @@ func findDateBinWidth(values []int64) stats[int64] {
 
 	mea := int64(xmath.Ceil(xmath.Mean(values)))
 	med := int64(xmath.Ceil(xmath.Median(values)))
-	low := int64(xmath.Ceil(xmath.LowerQuartile(values)))
-	upp := int64(xmath.Ceil(xmath.UpperQuartile(values)))
+
+	var low NullablePrimitive[int64]
+	var upp NullablePrimitive[int64]
+
+	if len(values) > 3 {
+		low = NewNullableInt(int64(xmath.Ceil(xmath.LowerQuartile(values))))
+		upp = NewNullableInt(int64(xmath.Ceil(xmath.UpperQuartile(values))))
+	}
 
 	bin := dateBinWidthDay
 	switch true {

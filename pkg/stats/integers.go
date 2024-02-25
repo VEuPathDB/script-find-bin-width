@@ -21,14 +21,22 @@ import (
 func findIntegerBinWidth(values []int64) Stats {
 	out := intFindBinWidth(values)
 
+	var lq NullablePrimitive[float64]
+	var uq NullablePrimitive[float64]
+
+	if len(values) > 3 {
+		lq = NewNullableFloat(xmath.LowerQuartile(values))
+		uq = NewNullableFloat(xmath.UpperQuartile(values))
+	}
+
 	return stats[float64]{
 		min:           float64(out.min),
 		max:           float64(out.max),
 		binWidth:      float64(out.binWidth),
 		mean:          xmath.Mean(values),
 		median:        xmath.Median(values),
-		lowerQuartile: xmath.LowerQuartile(values),
-		upperQuartile: xmath.UpperQuartile(values),
+		lowerQuartile: lq,
+		upperQuartile: uq,
 		stringifier:   intStringifier,
 		dataType:      xtype.DataTypeInteger,
 	}

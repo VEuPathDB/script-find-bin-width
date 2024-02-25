@@ -14,22 +14,35 @@ func (l *LineSplitResult) split() (string, string, string) {
 
 type LineSplitFunction = func(line string) (LineSplitResult, error)
 
+const (
+	scannedNo    uint8 = 0
+	scannedTrue  uint8 = 1
+	scannedFalse uint8 = 2
+)
+
 type inputIterator struct {
 	line    uint
 	scanner *bufio.Scanner
 	err     error
 	splitFn LineSplitFunction
+	scanned uint8
 }
 
 func (i *inputIterator) hasNext() bool {
+	if i.scanned != scannedNo {
+		return i.scanned == scannedTrue
+	}
+
 	if !i.scanner.Scan() {
 		i.err = i.scanner.Err()
 		if i.err != nil {
 			i.err = inputError{i.line + 1, i.err}
 		}
+		i.scanned = scannedFalse
 		return false
 	}
 
+	i.scanned = scannedTrue
 	return true
 }
 
@@ -39,6 +52,7 @@ func (i *inputIterator) next() (LineSplitResult, error) {
 	}
 
 	i.line++
+	i.scanned = scannedNo
 
 	if out, err := i.splitFn(i.scanner.Text()); err != nil {
 		return LineSplitResult{}, inputError{i.line, err}

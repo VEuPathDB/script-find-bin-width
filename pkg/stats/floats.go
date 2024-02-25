@@ -29,11 +29,11 @@ func findFloatBinWidth(values []float64) Stats {
 		return stats[float64]{
 			min:           mnx,
 			max:           mnx,
-			binWidth:      0,
+			binWidth:      1,
 			mean:          mnx,
 			median:        mnx,
-			lowerQuartile: mnx,
-			upperQuartile: mnx,
+			lowerQuartile: NullablePrimitive[float64]{},
+			upperQuartile: NullablePrimitive[float64]{},
 			stringifier:   floatStringifier,
 			dataType:      xtype.DataTypeFloat,
 		}
@@ -48,14 +48,22 @@ func findFloatBinWidth(values []float64) Stats {
 
 	res := floatNumBinsToBinWidth(values, numBins)
 
+	var lq NullablePrimitive[float64]
+	var uq NullablePrimitive[float64]
+
+	if len(values) > 3 {
+		lq = NewNullableFloat(xmath.LowerQuartile(values))
+		uq = NewNullableFloat(xmath.UpperQuartile(values))
+	}
+
 	return stats[float64]{
 		min:           res.min,
 		max:           res.max,
 		binWidth:      xmath.NonZeroRound(res.binWidth, res.avgDigits),
 		mean:          xmath.Mean(values),
 		median:        xmath.Median(values),
-		lowerQuartile: xmath.LowerQuartile(values),
-		upperQuartile: xmath.UpperQuartile(values),
+		lowerQuartile: lq,
+		upperQuartile: uq,
 		stringifier:   floatStringifier,
 		dataType:      xtype.DataTypeFloat,
 	}

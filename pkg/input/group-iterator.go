@@ -108,10 +108,11 @@ func (c *collectingLineGroupIterator) Next() (LineGroup, error) {
 
 		if next[0] != key1 || next[1] != key2 {
 			c.buf = next
+			c.hasBuf = true
 			break
 		}
 
-		err = values.append(&key, value, c.rmNa)
+		err = values.append(&key, next[2], c.rmNa)
 		if err != nil {
 			return LineGroup{}, c.wrapError(err)
 		}

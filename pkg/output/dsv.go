@@ -49,7 +49,9 @@ func (d *dsvFormatter) Write(result Formattable) {
 	}
 
 	if d.writeHead {
-		for i := 0; i < fc; i++ {
+		xos.BufWriteBytes(d.out, d.keyBuf[:d.headFormat.format(&d.keyBuf, result.GetFieldName(0, &d.keyBuf))])
+		for i := 1; i < fc; i++ {
+			xos.BufWriteString(d.out, d.delim)
 			xos.BufWriteBytes(d.out, d.keyBuf[:d.headFormat.format(&d.keyBuf, result.GetFieldName(i, &d.keyBuf))])
 		}
 		xos.BufWriteString(d.out, d.nl)
@@ -59,7 +61,7 @@ func (d *dsvFormatter) Write(result Formattable) {
 	xos.BufWriteBytes(d.out, d.valBuf[:result.GetFieldValue(0, &d.valBuf)])
 	for i := 1; i < fc; i++ {
 		xos.BufWriteString(d.out, d.delim)
-		xos.BufWriteBytes(d.out, d.valBuf[:result.GetFieldValue(0, &d.valBuf)])
+		xos.BufWriteBytes(d.out, d.valBuf[:result.GetFieldValue(i, &d.valBuf)])
 	}
 	xos.BufWriteString(d.out, d.nl)
 }

@@ -1,6 +1,8 @@
 package stats
 
-import "find-bin-width/pkg/input"
+import (
+	"find-bin-width/pkg/input"
+)
 
 type ResultIterator struct {
 	sourceIterator input.LineGroupIterator
