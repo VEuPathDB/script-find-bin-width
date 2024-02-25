@@ -6,18 +6,6 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
-// Round rounds the given value to the given number of decimal places.
-func Round(value float64, digits int) float64 {
-	if digits < 1 {
-		return HardRound(value)
-	}
-
-	m := math.Pow(10, float64(digits))
-	y := value * m
-
-	return HardRound(y) / m
-}
-
 // HardRound rounds the given value to the nearest whole number.
 func HardRound(value float64) float64 {
 	return float64(HardRoundToInt(value))
@@ -51,11 +39,38 @@ func NonZeroRound(value float64, digits int) float64 {
 		return 0
 	}
 
-	r := Round(value, digits)
+	r := r_Round_r3(value, digits)
 
 	if r == 0 {
 		return NonZeroRound(value, digits+1)
 	} else {
 		return r
 	}
+}
+
+// direct port of R's round_r3 function.
+func r_Round_r3(x float64, digits int) float64 {
+	p10 := math.Pow10(digits)
+
+	if math.IsInf(p10, 1) {
+		return x
+	} else if p10 == 0 {
+		return 0
+	}
+
+	x10 := p10 * x
+	i10 := math.Floor(x10)
+	xd := i10 / p10
+	xu := math.Ceil(x10) / p10
+	D := (xu - x) - (x - xd)
+	e := math.Mod(i10, 2)
+	r := x
+
+	if D < 0 || (e != 0 && D == 0) {
+		r = xu
+	} else {
+		r = xd
+	}
+
+	return r
 }
