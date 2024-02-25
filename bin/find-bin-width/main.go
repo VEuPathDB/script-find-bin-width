@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"io"
 	"os"
 	"strconv"
 
@@ -13,71 +14,91 @@ import (
 func main() {
 	config := cmd.ParseCliArgs(os.Args)
 
-	var result stats.ResultIterator
-	var err error
-	var file *os.File
+	formatter := buildFormatter(os.Stdout, &config)
 
-	if config.InputFile == "" {
-		file = os.Stdin
+	formatter.Open()
+
+	if len(config.InputFiles) > 0 {
+		for _, path := range config.InputFiles {
+			if err := processInputFile(path, formatter, &config); err != nil {
+				badExit(err.Error())
+			}
+		}
 	} else {
-		file, err = os.Open(config.InputFile)
-		if err != nil {
+		if err := processInput(os.Stdin, formatter, &config); err != nil {
 			badExit(err.Error())
 		}
-		defer func(file *os.File) { _ = file.Close() }(file)
 	}
 
+	formatter.Finalize()
+}
+
+func processInputFile(path string, formatter output.Formatter, config *cmd.Config) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer func(file *os.File) { _ = file.Close() }(file)
+
+	return processInput(file, formatter, config)
+}
+
+func processInput(input io.Reader, formatter output.Formatter, config *cmd.Config) error {
+
+	var result stats.ResultIterator
+	var err error
+
 	if config.InputsAreSorted {
-		result, err = stats.CalculateSorted(file, config.RemoveNAValues)
+		result, err = stats.CalculateSorted(input, config.RemoveNAValues)
 	} else {
-		result, err = stats.CalculateUnsorted(file, config.RemoveNAValues)
+		result, err = stats.CalculateUnsorted(input, config.RemoveNAValues)
 	}
 
 	if err != nil {
-		badExit(err.Error())
+		return err
 	}
 
-	var formatter output.Formatter
+	for result.HasNext() {
+		if res, err := result.Next(); err != nil {
+			return err
+		} else {
+			formatter.Write(res)
+		}
+	}
 
-	writer := bufio.NewWriter(os.Stdout)
+	return nil
+}
+
+func buildFormatter(out io.Writer, config *cmd.Config) output.Formatter {
+	writer := bufio.NewWriter(out)
 
 	switch config.OutputFormat {
 	case output.FormatTSV:
-		formatter = output.DSVFormatter(writer, output.DSVFormatConfig{
+		return output.DSVFormatter(writer, output.DSVFormatConfig{
 			Delimiter:     "\t",
 			LineSeparator: "\n",
 			WriteHeaders:  config.PrintHeaders,
 		})
 	case output.FormatCSV:
-		formatter = output.DSVFormatter(writer, output.DSVFormatConfig{
+		return output.DSVFormatter(writer, output.DSVFormatConfig{
 			Delimiter:     ",",
 			LineSeparator: "\n",
 			WriteHeaders:  config.PrintHeaders,
 		})
 	case output.FormatJSON:
-		formatter = output.JsonFormatter(writer, output.JsonFormatConfig{
+		return output.JsonFormatter(writer, output.JsonFormatConfig{
 			FieldNameFormat: output.FieldNameFormatCamel,
 		})
 	case output.FormatJSONL:
-		formatter = output.JsonLinesFormatter(writer, output.JsonLinesFormatterConfig{
+		return output.JsonLinesFormatter(writer, output.JsonLinesFormatterConfig{
 			FieldNameFormat:     output.FieldNameFormatCamel,
 			LineSeparator:       "\n",
 			PrintFieldNameArray: config.PrintHeaders,
 		})
 	default:
 		badExit("illegal state: unrecognized config format " + strconv.Itoa(int(config.OutputFormat)))
+		panic(nil)
 	}
-
-	formatter.Open()
-	for result.HasNext() {
-		if res, err := result.Next(); err != nil {
-			badExit(err.Error())
-		} else {
-			formatter.Write(res)
-		}
-	}
-
-	formatter.Finalize()
 }
 
 func badExit(msg string) {

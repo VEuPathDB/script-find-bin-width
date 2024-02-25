@@ -14,7 +14,7 @@ type Config struct {
 	InputsAreSorted bool
 	OutputFormat    output.Format
 	PrintHeaders    bool
-	InputFile       string
+	InputFiles      []string
 }
 
 func ParseCliArgs(args []string) (config Config) {
@@ -27,12 +27,10 @@ func ParseCliArgs(args []string) (config Config) {
 
 	fDesc := "Output format.  Valid options are tsv, csv, json, or jsonl"
 
-	iDesc := "File to read data from.  If omitted, data will be read from stdin."
-
 	tDesc := "Whether the header/title line should be included in the output.  This option does not apply to json " +
 		"output format."
 
-	cli.Command().
+	com := cli.Command().
 		WithFlag(cli.ComboFlag('r', "rm-na").
 			WithDescription(rDesc).
 			WithBinding(&config.RemoveNAValues, false)).
@@ -51,15 +49,10 @@ func ParseCliArgs(args []string) (config Config) {
 		WithFlag(cli.ComboFlag('t', "headers").
 			WithDescription(tDesc).
 			WithBinding(&config.PrintHeaders, false)).
-		WithArgument(cli.Argument().
-			WithName("file").
-			WithDescription(iDesc).
-			WithBinding(func(path string) (err error) {
-				config.InputFile = path
-				_, err = os.Stat(path)
-				return
-			})).
+		WithUnmappedLabel("input files").
 		MustParse(args)
+
+	config.InputFiles = com.UnmappedInputs()
 
 	return
 }
