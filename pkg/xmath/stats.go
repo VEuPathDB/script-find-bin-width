@@ -25,7 +25,7 @@ func FD[V float64 | int64](values []V) float64 {
 	}
 
 	if iqr > 0 {
-		return Ceil(float64(Diff(Range(values))) / (2 * iqr * math.Pow(float64(len(values)), -1.0/3.0)))
+		return math.Ceil(float64(Diff(Range(values))) / (2 * iqr * math.Pow(float64(len(values)), -1.0/3.0)))
 	}
 
 	return 1
@@ -137,6 +137,6 @@ func Moments_Skewness[V float64 | int64](x []V) (skew, mean float64) {
 // Sturges computes the number of bins for a histogram using the Sturges
 // method applied to the given set of observations.
 func Sturges[V float64 | int64](values []V) float64 {
-	res := Ceil(1 + math.Log2(float64(len(values))))
+	res := math.Ceil(1 + math.Log2(float64(len(values))))
 	return max(res, 1)
 }

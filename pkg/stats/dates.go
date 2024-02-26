@@ -1,6 +1,8 @@
 package stats
 
 import (
+	"math"
+
 	"find-bin-width/pkg/xmath"
 	"find-bin-width/pkg/xtype"
 	"find-bin-width/pkg/xutil"
@@ -34,15 +36,15 @@ func findDateBinWidth(values []int64) stats[int64] {
 	res := intFindBinWidth(values)
 	binWidth := res.binWidth / 86400
 
-	mea := int64(xmath.Ceil(xmath.Mean(values)))
-	med := int64(xmath.Ceil(xmath.Median(values)))
+	mea := int64(math.Ceil(xmath.Mean(values)))
+	med := int64(math.Ceil(xmath.Median(values)))
 
 	var low NullablePrimitive[int64]
 	var upp NullablePrimitive[int64]
 
 	if len(values) > 3 {
-		low = NewNullableInt(int64(xmath.Ceil(xmath.LowerQuartile(values))))
-		upp = NewNullableInt(int64(xmath.Ceil(xmath.UpperQuartile(values))))
+		low = NewNullableInt(int64(math.Ceil(xmath.LowerQuartile(values))))
+		upp = NewNullableInt(int64(math.Ceil(xmath.UpperQuartile(values))))
 	}
 
 	bin := dateBinWidthDay

@@ -22,7 +22,7 @@ func findNumBins[V float64 | int64](values []V) int {
 		n := float64(len(values))
 		se := math.Sqrt(6 * (n - 2) / ((n + 1) * (n + 3)))
 		ke := math.Log2(1 + absSkew/se)
-		numBins = xmath.Ceil(xmath.Sturges(values) + ke)
+		numBins = math.Ceil(xmath.Sturges(values) + ke)
 		setBins = true
 	}
 
