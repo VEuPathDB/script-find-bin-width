@@ -9,15 +9,6 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
-// findIntegerBinWidth determines the bin width for a series of integral values.
-//
-// Returns a string representation of the bin width for the given series of
-// values.  An NA bin width is represented as an empty string.
-//
-// @param values Series of values for which the bin width should be calculated.
-//
-// @returns A string representation of the bin width.  NA return values will be
-// represented as an empty string.
 func findIntegerBinWidth(values []int64) Stats {
 	out := intFindBinWidth(values)
 
