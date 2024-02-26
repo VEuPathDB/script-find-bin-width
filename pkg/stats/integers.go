@@ -88,7 +88,7 @@ func intNumBinsToBinWidth(values []int64, numBins int) inb2bwResult {
 	return inb2bwResult{
 		min:      info.min,
 		max:      info.max,
-		binWidth: max(int64(math.Round(binWidth)), 1),
+		binWidth: max(int64(xmath.NonZeroRound(binWidth, 0)), 1),
 	}
 }
 
