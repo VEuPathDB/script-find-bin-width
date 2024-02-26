@@ -15,8 +15,8 @@ func findNumBins[V float64 | int64](values []V) int {
 		setBins = true
 	}
 
-	skewness := xmath.Skewness(values)
-	absSkew := math.Abs(skewness.Skewness)
+	skewness, _ := xmath.Moments_Skewness(values)
+	absSkew := math.Abs(skewness)
 
 	if absSkew > 0.5 {
 		n := float64(len(values))

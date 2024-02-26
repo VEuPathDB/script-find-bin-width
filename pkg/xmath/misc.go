@@ -1,19 +1,5 @@
 package xmath
 
-import (
-	"find-bin-width/pkg/xutil"
-)
-
-// Max returns the greater of two given values.
-func Max[V float64 | int64](a, b V) V {
-	return xutil.IfElse(a > b, a, b)
-}
-
-// Min returns the lesser of two given values.
-func Min[V float64 | int64](a, b V) V {
-	return xutil.IfElse(a < b, a, b)
-}
-
 // UniqueN returns the count of distinct values in a given set of values.
 func UniqueN[V float64 | int64](values []V) int {
 	hold := make(map[V]bool)

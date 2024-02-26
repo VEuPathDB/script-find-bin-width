@@ -4,17 +4,6 @@ import (
 	"math"
 )
 
-type StdDeviationResult struct {
-	Mean         float64
-	StdDeviation float64
-}
-
-type SkewnessResult struct {
-	Mean         float64
-	StdDeviation float64
-	Skewness     float64
-}
-
 type MADResult struct {
 	Mean float64
 	MAD  float64
@@ -129,40 +118,25 @@ func Median[V float64 | int64](values []V) float64 {
 	}
 }
 
-// Skewness returns the skewness of the given set of observations.
-func Skewness[V float64 | int64](values []V) SkewnessResult {
-	sum := float64(0)
-	res := StdDeviation(values)
-	sd3 := res.StdDeviation * res.StdDeviation * res.StdDeviation
+func Moments_Skewness[V float64 | int64](x []V) (skew, mean float64) {
+	n := float64(len(x))
+	sum3 := 0.0
+	sum2 := 0.0
 
-	for _, v := range values {
-		tmp := float64(v) - res.Mean
-		sum += tmp * tmp * tmp
+	mean = Mean(x)
+
+	for _, f := range x {
+		tmp := float64(f) - mean
+		sum3 += tmp * tmp * tmp
+		sum2 += tmp * tmp
 	}
 
-	skew := sum / ((float64(len(values)) - 1) * sd3)
-
-	return SkewnessResult{res.Mean, res.StdDeviation, skew}
-}
-
-// StdDeviation returns the standard deviation of the given set of observations.
-func StdDeviation[V float64 | int64](values []V) StdDeviationResult {
-	sum := float64(0)
-	mean := Mean(values)
-
-	for _, v := range values {
-		tmp := float64(v) - mean
-		sum += tmp * tmp
-	}
-
-	std := math.Sqrt(sum / float64(len(values)-1))
-
-	return StdDeviationResult{mean, std}
+	return (sum3 / n) / math.Pow(sum2/n, 3.0/2.0), mean
 }
 
 // Sturges computes the number of bins for a histogram using the Sturges
 // method applied to the given set of observations.
 func Sturges[V float64 | int64](values []V) float64 {
 	res := Ceil(1 + math.Log2(float64(len(values))))
-	return Max(res, 1)
+	return max(res, 1)
 }
