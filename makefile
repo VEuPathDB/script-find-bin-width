@@ -44,28 +44,31 @@ build-linux:
 
 
 .PHONY: release
-release: release-windows release-darwin release-linux
+release: clean release-windows release-darwin release-linux
 
 .PHONY: release-windows
-release-windows: build-windows
+release-windows: clean build-windows
 	@echo "$(C_BLUE)Packaging for windows$(C_NONE)"
 	@cd build/windows \
 		&& zip -9 fbw-windows-$(VERSION).zip find-bin-width.exe \
 		&& mv fbw-windows-$(VERSION).zip ..
+	@rm -rf build/windows
 
 .PHONY: release-darwin
-release-darwin: build-darwin
+release-darwin: clean build-darwin
 	@echo "$(C_BLUE)Packaging for darwin$(C_NONE)"
 	@cd build/darwin \
 		&& zip -9 fbw-darwin-$(VERSION).zip find-bin-width \
 		&& mv fbw-darwin-$(VERSION).zip ..
+	@rm -rf build/darwin
 
 .PHONY: release-linux
-release-linux: build-linux
+release-linux: clean build-linux
 	@echo "$(C_BLUE)Packaging for linux$(C_NONE)"
 	@cd build/linux \
 		&& zip -9 fbw-linux-$(VERSION).zip find-bin-width \
 		&& mv fbw-linux-$(VERSION).zip ..
+	@rm -rf build/linux
 
 
 ##
@@ -78,13 +81,19 @@ release-linux: build-linux
 .PHONY: test
 test: unit-test input-test
 
-.PHONY: input-test
-input-test: build-linux
-	@echo "$(C_BLUE)Running input tests$(C_NONE)"
-	@./input-test.sh build/linux/find-bin-width
-
 .PHONY: unit-test
 unit-test:
 	@echo "$(C_BLUE)Running unit tests$(C_NONE)"
 	@go test ./...
 
+
+##
+#
+#  MISC TASKS
+#
+##
+
+
+.PHONY: clean
+clean:
+	@rm -rf build
