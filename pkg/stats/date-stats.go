@@ -8,16 +8,7 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
-// findDateBinWidth determines the bin width for a series of date values.
-//
-// Returns one of the string values "year", "month", "week", or "day";
-// additionally, in the case of an NA value, returns an empty string.
-//
-// @param values Series of values for which the bin width should be calculated.
-//
-// @returns A string representation of the bin width.  NA return values will be
-// represented as an empty string.
-func findDateBinWidth(values []int64) stats[int64] {
+func calculateDateStats(values []int64) stats[int64] {
 	if xmath.UniqueN(values) == 1 {
 		mnx := xutil.IfElse(len(values) == 0, 0, values[0])
 		return stats[int64]{
@@ -33,7 +24,7 @@ func findDateBinWidth(values []int64) stats[int64] {
 		}
 	}
 
-	res := intFindBinWidth(values)
+	res := sharedCalcIntegerStats(values)
 	binWidth := res.binWidth / 86400
 
 	mea := int64(math.Ceil(xmath.Mean(values)))

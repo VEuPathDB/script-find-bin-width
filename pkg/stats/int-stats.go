@@ -9,8 +9,8 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
-func findIntegerBinWidth(values []int64) Stats {
-	out := intFindBinWidth(values)
+func calculateIntegerStats(values []int64) Stats {
+	result := sharedCalcIntegerStats(values)
 
 	var lq NullablePrimitive[float64]
 	var uq NullablePrimitive[float64]
@@ -21,9 +21,9 @@ func findIntegerBinWidth(values []int64) Stats {
 	}
 
 	return stats[float64]{
-		min:           float64(out.min),
-		max:           float64(out.max),
-		binWidth:      float64(out.binWidth),
+		min:           float64(result.min),
+		max:           float64(result.max),
+		binWidth:      float64(result.binWidth),
 		mean:          xmath.Mean(values),
 		median:        xmath.Median(values),
 		lowerQuartile: lq,
@@ -33,7 +33,7 @@ func findIntegerBinWidth(values []int64) Stats {
 	}
 }
 
-func intFindBinWidth(values []int64) inb2bwResult {
+func sharedCalcIntegerStats(values []int64) inb2bwResult {
 	if len(values) == 0 {
 		return inb2bwResult{}
 	}

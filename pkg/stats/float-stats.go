@@ -10,16 +10,7 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
-// findFloatBinWidth determines the bin width for a series of float values.
-//
-// Returns a string representation of the bin width for the given series of
-// values.  An NA bin width is represented as an empty string.
-//
-// @param values Series of values for which the bin width should be calculated.
-//
-// @returns A string representation of the bin width.  NA return values will be
-// represented as an empty string.
-func findFloatBinWidth(values []float64) Stats {
+func calculateFloatStats(values []float64) Stats {
 	if len(values) == 0 {
 		return stats[float64]{stringifier: floatStringifier}
 	}
