@@ -20,25 +20,25 @@ func (r Result) FieldCount() int {
 	return r.Stats.FieldCount() + 2
 }
 
-func (r Result) GetFieldName(index int, buf *output.FieldNameBuffer) int {
+func (r Result) WriteFieldName(index int, buf *output.FieldNameBuffer) int {
 	switch index {
 	case 0:
 		return copy(buf[:], fieldNameAttributeStableID)
 	case 1:
 		return copy(buf[:], fieldNameEntityTypeID)
 	default:
-		return r.Stats.GetFieldName(index-2, buf)
+		return r.Stats.WriteFieldName(index-2, buf)
 	}
 }
 
-func (r Result) GetFieldValue(index int, buf *output.FieldValueBuffer) int {
+func (r Result) WriteFieldValue(index int, buf *output.FieldValueBuffer) int {
 	switch index {
 	case 0:
 		return copy(buf[:], r.AttributeStableID.String())
 	case 1:
 		return copy(buf[:], r.EntityTypeID.String())
 	default:
-		return r.Stats.GetFieldValue(index-2, buf)
+		return r.Stats.WriteFieldValue(index-2, buf)
 	}
 }
 

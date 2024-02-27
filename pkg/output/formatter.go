@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+// Format defines a type indicator for the various output formats implemented
+// in this tool.
 type Format uint8
 
 const (
@@ -15,6 +17,13 @@ const (
 	FormatJSONL
 )
 
+// ParseFormat attempts to match the given input string to one of the valid
+// Format types.
+//
+// @param val = String value to match.
+//
+// @return[0] The matched Format value if one was found.
+// @return[1] An error value if no matching Format value could be found.
 func ParseFormat(val string) (Format, error) {
 	switch strings.ToLower(val) {
 	case "tsv":
@@ -30,20 +39,65 @@ func ParseFormat(val string) (Format, error) {
 	}
 }
 
+// Formatter defines a type used to write Formattable values out to a target or
+// targets in an implementation specific Format.
 type Formatter interface {
+
+	// Open performs any steps necessary to prepare for writing individual values.
+	//
+	// An example of this could be writing the starting '[' character before
+	// writing output values as a JSON array.
 	Open()
-	Write(result Formattable)
+
+	// Write the given value out to the underlying stream or streams.
+	Write(value Formattable)
+
+	// Finalize performs any steps necessary to conclude the output writing.
+	//
+	// An example of this could be writing the closing ']' character after writing
+	// the final output value in a JSON array.
 	Finalize()
 }
 
+// FieldNameFormat defines the different formats in which a Formattable field
+// name may be written out by a Formatter instance.
 type FieldNameFormat uint8
 
 const (
+	// FieldNameFormatSnake indicates that a field name value should be written in
+	// snake case.
+	//
+	// Example: "my_field_name"
 	FieldNameFormatSnake FieldNameFormat = iota
+
+	// FieldNameFormatCamel indicates that a field name value should be written in
+	// camel case.
+	//
+	// Example: "myFieldName"
 	FieldNameFormatCamel
+
+	// FieldNameFormatPascal indicates that a field name value should be written
+	// in pascal case.
+	//
+	// Example: "MyFieldName"
 	FieldNameFormatPascal
+
+	// FieldNameFormatTitle indicates that a field name value should be written as
+	// a title.
+	//
+	// Example: "My Field Name"
 	FieldNameFormatTitle
+
+	// FieldNameFormatKebab indicates that a field name value should be written in
+	// kebab case.
+	//
+	// Example: "my-field-name"
 	FieldNameFormatKebab
+
+	// FieldNameFormatSentence indicates that a field name value should be written
+	// in sentence format.
+	//
+	// Example: "My field name"
 	FieldNameFormatSentence
 )
 

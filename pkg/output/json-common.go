@@ -67,17 +67,17 @@ func (j jsonFormatCommon) writeObject(row Formattable) {
 }
 
 func (j jsonFormatCommon) writeKey(index int, row Formattable) {
-	j.writeQuoted(j.keyBuf[:j.nameFormat.format(&j.keyBuf, row.GetFieldName(index, &j.keyBuf))])
+	j.writeQuoted(j.keyBuf[:j.nameFormat.format(&j.keyBuf, row.WriteFieldName(index, &j.keyBuf))])
 }
 
 func (j jsonFormatCommon) writeValue(index int, row Formattable) {
 	switch row.GetFieldType(index) {
 	case FieldTypeNumeric:
-		xos.BufWriteBytes(j.stream, j.valBuf[:row.GetFieldValue(index, &j.valBuf)])
+		xos.BufWriteBytes(j.stream, j.valBuf[:row.WriteFieldValue(index, &j.valBuf)])
 	case FieldTypeText:
-		j.writeQuoted(j.valBuf[:row.GetFieldValue(index, &j.valBuf)])
+		j.writeQuoted(j.valBuf[:row.WriteFieldValue(index, &j.valBuf)])
 	case FieldTypeBoolean:
-		xos.BufWriteBytes(j.stream, j.valBuf[:row.GetFieldValue(index, &j.valBuf)])
+		xos.BufWriteBytes(j.stream, j.valBuf[:row.WriteFieldValue(index, &j.valBuf)])
 	case FieldTypeNA:
 		xos.BufWriteString(j.stream, "null")
 	default:

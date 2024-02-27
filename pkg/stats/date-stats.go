@@ -8,6 +8,15 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
+type dateBinWidth = int64
+
+const (
+	dateBinWidthDay dateBinWidth = iota
+	dateBinWidthWeek
+	dateBinWidthMonth
+	dateBinWidthYear
+)
+
 func calculateDateStats(values []int64) stats[int64] {
 	if xmath.UniqueN(values) == 1 {
 		mnx := xutil.IfElse(len(values) == 0, 0, values[0])
