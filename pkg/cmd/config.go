@@ -18,6 +18,14 @@ type Config struct {
 }
 
 func ParseCliArgs(args []string) (config Config) {
+	overallDesc := "Calculates various stats about a given stream of input data.\n\n" +
+		"Input is expected to be in a headerless 3 column TSV format with the columns 'attribute_stable_id', 'entity_id', " +
+		"and 'value'.\n\n" +
+		"Output will contain the fields 'min', 'max', 'bin_width', 'mean', 'median', 'lower_quartile', and " +
+		"'upper_quartile'.\n\n" +
+		"Input may be passed either on stdin, or via a list of 1 or more file paths which will be read and processed in " +
+		"the order they are passed."
+
 	rDesc := "Whether NA values (empty strings on input) should be ignored.  If this is not set, or is set to false, " +
 		"data sets containing NA values will result in an NA value being returned.\n\nFor JSON output types, NA values " +
 		"are represented as null.  For CSV/TSV output types, NA values are represented as empty strings."
@@ -31,6 +39,7 @@ func ParseCliArgs(args []string) (config Config) {
 		"output format."
 
 	com := cli.Command().
+		WithDescription(overallDesc).
 		WithFlag(cli.ComboFlag('r', "rm-na").
 			WithDescription(rDesc).
 			WithBinding(&config.RemoveNAValues, false)).
@@ -49,7 +58,7 @@ func ParseCliArgs(args []string) (config Config) {
 		WithFlag(cli.ComboFlag('t', "headers").
 			WithDescription(tDesc).
 			WithBinding(&config.PrintHeaders, false)).
-		WithUnmappedLabel("input files").
+		WithUnmappedLabel("input files...").
 		MustParse(args)
 
 	config.InputFiles = com.UnmappedInputs()
