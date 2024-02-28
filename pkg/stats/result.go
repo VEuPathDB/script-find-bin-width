@@ -13,7 +13,7 @@ const (
 type Result struct {
 	AttributeStableID vpdb.AttributeStableID
 	EntityTypeID      vpdb.EntityTypeID
-	Stats             Stats
+	Stats             Summary
 }
 
 func (r Result) FieldCount() int {

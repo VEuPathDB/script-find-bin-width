@@ -2,7 +2,7 @@ package stats
 
 import "find-bin-width/pkg/xtype"
 
-func calculateStats(dataType xtype.DataType, data any) Stats {
+func calculateStats(dataType xtype.DataType, data any) Summary {
 	switch dataType {
 	case xtype.DataTypeInteger:
 		return calculateIntegerStats(data.([]int64))

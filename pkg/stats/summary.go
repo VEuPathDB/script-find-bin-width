@@ -4,8 +4,8 @@ import (
 	"find-bin-width/pkg/output"
 )
 
-// Stats is a container for the data set stat calculation results.
-type Stats interface {
+// Summary is a container for the data set stat calculation results.
+type Summary interface {
 	output.Formattable
 
 	// Min returns the minimum value from the input data.

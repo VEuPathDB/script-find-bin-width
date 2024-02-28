@@ -8,11 +8,15 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
+// valueStringifier defines a function type that converts the given raw value
+// for a specified summary field to a string and writes it to the given buffer.
+type valueStringifier = func(buf *output.FieldValueBuffer, raw any, field summaryField) int
+
 // intStringifier converts the given value into a string and writes it to the
 // given buffer.
 //
 // As some of the fields for int data sets are expected to be floats, all values
-// stored in the stats struct for ints are stored as floats.  This means that
+// stored in the summary struct for ints are stored as floats.  This means that
 // for fields that expect int output, the value must be converted to int, and
 // for fields that expect a float output, the value can be stringified directly.
 //
@@ -20,11 +24,11 @@ import (
 //
 // @param raw = Raw field value that will be stringified.
 //
-// @param field = Identifier for the specific stat field the raw value is being
-// stringified for.
+// @param field = Identifier for the specific summary field the raw value is
+// being stringified for.
 //
 // @return The number of bytes written to the given buffer.
-func intStringifier(buf *output.FieldValueBuffer, raw any, field statField) int {
+func intStringifier(buf *output.FieldValueBuffer, raw any, field summaryField) int {
 	switch field {
 
 	case statFieldMin, statFieldMax, statFieldBinWidth:
@@ -50,11 +54,11 @@ func intStringifier(buf *output.FieldValueBuffer, raw any, field statField) int 
 //
 // @param raw = Raw field value that will be stringified.
 //
-// @param field = Identifier for the specific stat field the raw value is being
-// stringified for.
+// @param field = Identifier for the specific summary field the raw value is
+// being stringified for.
 //
 // @return The number of bytes written to the given buffer.
-func floatStringifier(buf *output.FieldValueBuffer, raw any, field statField) int {
+func floatStringifier(buf *output.FieldValueBuffer, raw any, field summaryField) int {
 	if field == statFieldLowerQuartile || field == statFieldUpperQuartile {
 		field := raw.(NullablePrimitive[float64])
 		if field.IsNull() {
@@ -91,11 +95,11 @@ const (
 //
 // @param raw = Raw field value that will be stringified.
 //
-// @param field = Identifier for the specific stat field the raw value is being
-// stringified for.
+// @param field = Identifier for the specific summary field the raw value is
+// being stringified for.
 //
 // @return The number of bytes written to the given buffer.
-func dateStringifier(buf *output.FieldValueBuffer, raw any, f statField) int {
+func dateStringifier(buf *output.FieldValueBuffer, raw any, f summaryField) int {
 	if f == statFieldBinWidth {
 		switch raw.(int64) {
 		case dateBinWidthDay:

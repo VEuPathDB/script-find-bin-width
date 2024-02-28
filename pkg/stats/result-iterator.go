@@ -23,7 +23,7 @@ func (r *ResultIterator) Next() (Result, error) {
 		return Result{
 			AttributeStableID: group.AttributeStableID,
 			EntityTypeID:      group.EntityTypeID,
-			Stats:             naStats(0),
+			Stats:             naSummary(0),
 		}, nil
 	}
 

@@ -10,14 +10,14 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
-func calculateFloatStats(values []float64) Stats {
+func calculateFloatStats(values []float64) Summary {
 	if len(values) == 0 {
-		return stats[float64]{stringifier: floatStringifier}
+		return summary[float64]{stringifier: floatStringifier}
 	}
 
 	if xmath.UniqueN(values) == 1 {
 		mnx := values[0]
-		return stats[float64]{
+		return summary[float64]{
 			min:           mnx,
 			max:           mnx,
 			binWidth:      1,
@@ -34,7 +34,7 @@ func calculateFloatStats(values []float64) Stats {
 
 	numBins := findNumBins(values)
 	if numBins == 0 {
-		return stats[float64]{stringifier: floatStringifier}
+		return summary[float64]{stringifier: floatStringifier}
 	}
 
 	res := floatNumBinsToBinWidth(values, numBins)
@@ -47,7 +47,7 @@ func calculateFloatStats(values []float64) Stats {
 		uq = NewNullableFloat(xmath.UpperQuartile(values))
 	}
 
-	return stats[float64]{
+	return summary[float64]{
 		min:           res.min,
 		max:           res.max,
 		binWidth:      xmath.NonZeroRound(res.binWidth, res.avgDigits),

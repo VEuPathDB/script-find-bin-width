@@ -9,10 +9,10 @@ import (
 
 const statFieldCount = 7
 
-type statField uint8
+type summaryField uint8
 
 const (
-	statFieldMin statField = iota
+	statFieldMin summaryField = iota
 	statFieldMax
 	statFieldBinWidth
 	statFieldMean
@@ -31,9 +31,9 @@ var fieldNames = [...]string{
 	"upper_quartile",
 }
 
-// stats implements the Stats interface as a generic container for calculated
-// data set stat values.
-type stats[T float64 | int64 | bool] struct {
+// summary implements the Summary interface as a generic container for
+// calculated data set stat values.
+type summary[T float64 | int64 | bool] struct {
 	min           T
 	max           T
 	binWidth      T
@@ -41,11 +41,11 @@ type stats[T float64 | int64 | bool] struct {
 	median        T
 	lowerQuartile NullablePrimitive[T]
 	upperQuartile NullablePrimitive[T]
-	stringifier   func(buf *output.FieldValueBuffer, value any, field statField) int
+	stringifier   valueStringifier
 	dataType      xtype.DataType
 }
 
-func (s stats[T]) GetFieldType(int) output.FieldType {
+func (s summary[T]) GetFieldType(int) output.FieldType {
 	switch s.dataType {
 	case xtype.DataTypeFloat, xtype.DataTypeInteger:
 		return output.FieldTypeNumeric
@@ -58,11 +58,11 @@ func (s stats[T]) GetFieldType(int) output.FieldType {
 	}
 }
 
-func (s stats[T]) FieldCount() int {
+func (s summary[T]) FieldCount() int {
 	return statFieldCount
 }
 
-func (s stats[T]) WriteFieldName(index int, buf *output.FieldNameBuffer) int {
+func (s summary[T]) WriteFieldName(index int, buf *output.FieldNameBuffer) int {
 	if index < statFieldCount {
 		return copy(buf[:], fieldNames[index])
 	}
@@ -70,7 +70,7 @@ func (s stats[T]) WriteFieldName(index int, buf *output.FieldNameBuffer) int {
 	panic(fmt.Sprintf("index %d is out of bounds for field count %d", index, s.FieldCount()))
 }
 
-func (s stats[T]) WriteFieldValue(index int, buf *output.FieldValueBuffer) int {
+func (s summary[T]) WriteFieldValue(index int, buf *output.FieldValueBuffer) int {
 	switch index {
 	case 0:
 		return s.stringifier(buf, s.min, statFieldMin)
@@ -91,55 +91,56 @@ func (s stats[T]) WriteFieldValue(index int, buf *output.FieldValueBuffer) int {
 	}
 }
 
-func (s stats[T]) Min() string {
+func (s summary[T]) Min() string {
 	buf := output.FieldValueBuffer{}
 	num := s.stringifier(&buf, s.min, statFieldMin)
 	return string(buf[:num])
 }
 
-func (s stats[T]) Max() string {
+func (s summary[T]) Max() string {
 	buf := output.FieldValueBuffer{}
 	num := s.stringifier(&buf, s.max, statFieldMax)
 	return string(buf[:num])
 }
 
-func (s stats[T]) BinWidth() string {
+func (s summary[T]) BinWidth() string {
 	buf := output.FieldValueBuffer{}
 	num := s.stringifier(&buf, s.binWidth, statFieldBinWidth)
 	return string(buf[:num])
 }
 
-func (s stats[T]) Mean() string {
+func (s summary[T]) Mean() string {
 	buf := output.FieldValueBuffer{}
 	num := s.stringifier(&buf, s.mean, statFieldMean)
 	return string(buf[:num])
 }
 
-func (s stats[T]) Median() string {
+func (s summary[T]) Median() string {
 	buf := output.FieldValueBuffer{}
 	num := s.stringifier(&buf, s.median, statFieldMedian)
 	return string(buf[:num])
 }
 
-func (s stats[T]) LowerQuartile() string {
+func (s summary[T]) LowerQuartile() string {
 	buf := output.FieldValueBuffer{}
 	num := s.stringifier(&buf, s.lowerQuartile, statFieldLowerQuartile)
 	return string(buf[:num])
 }
 
-func (s stats[T]) UpperQuartile() string {
+func (s summary[T]) UpperQuartile() string {
 	buf := output.FieldValueBuffer{}
 	num := s.stringifier(&buf, s.upperQuartile, statFieldUpperQuartile)
 	return string(buf[:num])
 }
 
-type naStats uint8
+// naSummary implements the Summary interface for an NA row.
+type naSummary uint8
 
-func (naStats) FieldCount() int {
+func (naSummary) FieldCount() int {
 	return statFieldCount
 }
 
-func (naStats) WriteFieldName(index int, buf *output.FieldNameBuffer) int {
+func (naSummary) WriteFieldName(index int, buf *output.FieldNameBuffer) int {
 	if index < statFieldCount {
 		return copy(buf[:], fieldNames[index])
 	}
@@ -147,38 +148,38 @@ func (naStats) WriteFieldName(index int, buf *output.FieldNameBuffer) int {
 	panic(fmt.Sprintf("index %d is out of bounds for field count %d", index, statFieldCount))
 }
 
-func (n naStats) WriteFieldValue(int, *output.FieldValueBuffer) int {
+func (n naSummary) WriteFieldValue(int, *output.FieldValueBuffer) int {
 	return 0
 }
 
-func (n naStats) GetFieldType(int) output.FieldType {
+func (n naSummary) GetFieldType(int) output.FieldType {
 	return output.FieldTypeNA
 }
 
-func (n naStats) Min() string {
+func (n naSummary) Min() string {
 	return ""
 }
 
-func (n naStats) Max() string {
+func (n naSummary) Max() string {
 	return ""
 }
 
-func (n naStats) BinWidth() string {
+func (n naSummary) BinWidth() string {
 	return ""
 }
 
-func (n naStats) Mean() string {
+func (n naSummary) Mean() string {
 	return ""
 }
 
-func (n naStats) Median() string {
+func (n naSummary) Median() string {
 	return ""
 }
 
-func (n naStats) LowerQuartile() string {
+func (n naSummary) LowerQuartile() string {
 	return ""
 }
 
-func (n naStats) UpperQuartile() string {
+func (n naSummary) UpperQuartile() string {
 	return ""
 }

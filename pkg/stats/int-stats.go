@@ -9,7 +9,7 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
-func calculateIntegerStats(values []int64) Stats {
+func calculateIntegerStats(values []int64) Summary {
 	result := sharedCalcIntegerStats(values)
 
 	var lq NullablePrimitive[float64]
@@ -20,7 +20,7 @@ func calculateIntegerStats(values []int64) Stats {
 		uq = NewNullableFloat(xmath.UpperQuartile(values))
 	}
 
-	return stats[float64]{
+	return summary[float64]{
 		min:           float64(result.min),
 		max:           float64(result.max),
 		binWidth:      float64(result.binWidth),

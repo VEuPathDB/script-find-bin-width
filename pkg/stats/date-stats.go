@@ -17,10 +17,10 @@ const (
 	dateBinWidthYear
 )
 
-func calculateDateStats(values []int64) stats[int64] {
+func calculateDateStats(values []int64) summary[int64] {
 	if xmath.UniqueN(values) == 1 {
 		mnx := xutil.IfElse(len(values) == 0, 0, values[0])
-		return stats[int64]{
+		return summary[int64]{
 			min:           mnx,
 			max:           mnx,
 			binWidth:      dateBinWidthDay,
@@ -57,7 +57,7 @@ func calculateDateStats(values []int64) stats[int64] {
 		bin = dateBinWidthWeek
 	}
 
-	return stats[int64]{
+	return summary[int64]{
 		min:           res.min,
 		max:           res.max,
 		binWidth:      bin,
