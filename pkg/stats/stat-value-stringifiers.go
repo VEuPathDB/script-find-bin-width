@@ -31,10 +31,10 @@ type valueStringifier = func(buf *output.FieldValueBuffer, raw any, field summar
 func intStringifier(buf *output.FieldValueBuffer, raw any, field summaryField) int {
 	switch field {
 
-	case statFieldMin, statFieldMax, statFieldBinWidth:
+	case summaryFieldMin, summaryFieldMax, summaryFieldBinWidth:
 		return copy(buf[:], strconv.FormatInt(int64(raw.(float64)), 10))
 
-	case statFieldLowerQuartile, statFieldUpperQuartile:
+	case summaryFieldLowerQuartile, summaryFieldUpperQuartile:
 		field := raw.(NullablePrimitive[float64])
 		if field.IsNull() {
 			return 0
@@ -59,7 +59,7 @@ func intStringifier(buf *output.FieldValueBuffer, raw any, field summaryField) i
 //
 // @return The number of bytes written to the given buffer.
 func floatStringifier(buf *output.FieldValueBuffer, raw any, field summaryField) int {
-	if field == statFieldLowerQuartile || field == statFieldUpperQuartile {
+	if field == summaryFieldLowerQuartile || field == summaryFieldUpperQuartile {
 		field := raw.(NullablePrimitive[float64])
 		if field.IsNull() {
 			return 0
@@ -100,7 +100,7 @@ const (
 //
 // @return The number of bytes written to the given buffer.
 func dateStringifier(buf *output.FieldValueBuffer, raw any, f summaryField) int {
-	if f == statFieldBinWidth {
+	if f == summaryFieldBinWidth {
 		switch raw.(int64) {
 		case dateBinWidthDay:
 			return copy(buf[:], sDay)
@@ -115,7 +115,7 @@ func dateStringifier(buf *output.FieldValueBuffer, raw any, f summaryField) int 
 		}
 	}
 
-	if f == statFieldLowerQuartile || f == statFieldUpperQuartile {
+	if f == summaryFieldLowerQuartile || f == summaryFieldUpperQuartile {
 		field := raw.(NullablePrimitive[int64])
 		if field.IsNull() {
 			return 0

@@ -7,18 +7,18 @@ import (
 	"find-bin-width/pkg/xtype"
 )
 
-const statFieldCount = 7
+const summaryFieldCount = 7
 
 type summaryField uint8
 
 const (
-	statFieldMin summaryField = iota
-	statFieldMax
-	statFieldBinWidth
-	statFieldMean
-	statFieldMedian
-	statFieldLowerQuartile
-	statFieldUpperQuartile
+	summaryFieldMin summaryField = iota
+	summaryFieldMax
+	summaryFieldBinWidth
+	summaryFieldMean
+	summaryFieldMedian
+	summaryFieldLowerQuartile
+	summaryFieldUpperQuartile
 )
 
 var fieldNames = [...]string{
@@ -59,11 +59,11 @@ func (s summary[T]) GetFieldType(int) output.FieldType {
 }
 
 func (s summary[T]) FieldCount() int {
-	return statFieldCount
+	return summaryFieldCount
 }
 
 func (s summary[T]) WriteFieldName(index int, buf *output.FieldNameBuffer) int {
-	if index < statFieldCount {
+	if index < summaryFieldCount {
 		return copy(buf[:], fieldNames[index])
 	}
 
@@ -73,19 +73,19 @@ func (s summary[T]) WriteFieldName(index int, buf *output.FieldNameBuffer) int {
 func (s summary[T]) WriteFieldValue(index int, buf *output.FieldValueBuffer) int {
 	switch index {
 	case 0:
-		return s.stringifier(buf, s.min, statFieldMin)
+		return s.stringifier(buf, s.min, summaryFieldMin)
 	case 1:
-		return s.stringifier(buf, s.max, statFieldMax)
+		return s.stringifier(buf, s.max, summaryFieldMax)
 	case 2:
-		return s.stringifier(buf, s.binWidth, statFieldBinWidth)
+		return s.stringifier(buf, s.binWidth, summaryFieldBinWidth)
 	case 3:
-		return s.stringifier(buf, s.mean, statFieldMean)
+		return s.stringifier(buf, s.mean, summaryFieldMean)
 	case 4:
-		return s.stringifier(buf, s.median, statFieldMedian)
+		return s.stringifier(buf, s.median, summaryFieldMedian)
 	case 5:
-		return s.stringifier(buf, s.lowerQuartile, statFieldLowerQuartile)
+		return s.stringifier(buf, s.lowerQuartile, summaryFieldLowerQuartile)
 	case 6:
-		return s.stringifier(buf, s.upperQuartile, statFieldUpperQuartile)
+		return s.stringifier(buf, s.upperQuartile, summaryFieldUpperQuartile)
 	default:
 		panic(fmt.Sprintf("index %d is out of bounds for field count %d", index, s.FieldCount()))
 	}
@@ -93,43 +93,43 @@ func (s summary[T]) WriteFieldValue(index int, buf *output.FieldValueBuffer) int
 
 func (s summary[T]) Min() string {
 	buf := output.FieldValueBuffer{}
-	num := s.stringifier(&buf, s.min, statFieldMin)
+	num := s.stringifier(&buf, s.min, summaryFieldMin)
 	return string(buf[:num])
 }
 
 func (s summary[T]) Max() string {
 	buf := output.FieldValueBuffer{}
-	num := s.stringifier(&buf, s.max, statFieldMax)
+	num := s.stringifier(&buf, s.max, summaryFieldMax)
 	return string(buf[:num])
 }
 
 func (s summary[T]) BinWidth() string {
 	buf := output.FieldValueBuffer{}
-	num := s.stringifier(&buf, s.binWidth, statFieldBinWidth)
+	num := s.stringifier(&buf, s.binWidth, summaryFieldBinWidth)
 	return string(buf[:num])
 }
 
 func (s summary[T]) Mean() string {
 	buf := output.FieldValueBuffer{}
-	num := s.stringifier(&buf, s.mean, statFieldMean)
+	num := s.stringifier(&buf, s.mean, summaryFieldMean)
 	return string(buf[:num])
 }
 
 func (s summary[T]) Median() string {
 	buf := output.FieldValueBuffer{}
-	num := s.stringifier(&buf, s.median, statFieldMedian)
+	num := s.stringifier(&buf, s.median, summaryFieldMedian)
 	return string(buf[:num])
 }
 
 func (s summary[T]) LowerQuartile() string {
 	buf := output.FieldValueBuffer{}
-	num := s.stringifier(&buf, s.lowerQuartile, statFieldLowerQuartile)
+	num := s.stringifier(&buf, s.lowerQuartile, summaryFieldLowerQuartile)
 	return string(buf[:num])
 }
 
 func (s summary[T]) UpperQuartile() string {
 	buf := output.FieldValueBuffer{}
-	num := s.stringifier(&buf, s.upperQuartile, statFieldUpperQuartile)
+	num := s.stringifier(&buf, s.upperQuartile, summaryFieldUpperQuartile)
 	return string(buf[:num])
 }
 
@@ -137,15 +137,15 @@ func (s summary[T]) UpperQuartile() string {
 type naSummary uint8
 
 func (naSummary) FieldCount() int {
-	return statFieldCount
+	return summaryFieldCount
 }
 
 func (naSummary) WriteFieldName(index int, buf *output.FieldNameBuffer) int {
-	if index < statFieldCount {
+	if index < summaryFieldCount {
 		return copy(buf[:], fieldNames[index])
 	}
 
-	panic(fmt.Sprintf("index %d is out of bounds for field count %d", index, statFieldCount))
+	panic(fmt.Sprintf("index %d is out of bounds for field count %d", index, summaryFieldCount))
 }
 
 func (n naSummary) WriteFieldValue(int, *output.FieldValueBuffer) int {

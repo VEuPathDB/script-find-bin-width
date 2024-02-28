@@ -10,7 +10,7 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
-func calculateFloatStats(values []float64) Summary {
+func calculateFloatSummary(values []float64) Summary {
 	if len(values) == 0 {
 		return summary[float64]{stringifier: floatStringifier}
 	}

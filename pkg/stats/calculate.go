@@ -2,16 +2,16 @@ package stats
 
 import "find-bin-width/pkg/xtype"
 
-func calculateStats(dataType xtype.DataType, data any) Summary {
+func calculateSummary(dataType xtype.DataType, data any) Summary {
 	switch dataType {
 	case xtype.DataTypeInteger:
-		return calculateIntegerStats(data.([]int64))
+		return calculateIntegerSummary(data.([]int64))
 	case xtype.DataTypeFloat:
-		return calculateFloatStats(data.([]float64))
+		return calculateFloatSummary(data.([]float64))
 	case xtype.DataTypeDate:
-		return calculateDateStats(data.([]int64))
+		return calculateDateSummary(data.([]int64))
 	case xtype.DataTypeBoolean:
-		return calculateBooleanStats(data.([]bool))
+		return calculateBooleanSummary(data.([]bool))
 	}
 
 	panic("illegal state, cannot find bin width of data type " + dataType.String())

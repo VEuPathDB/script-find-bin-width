@@ -9,7 +9,7 @@ import (
 	"find-bin-width/pkg/xutil"
 )
 
-func calculateIntegerStats(values []int64) Summary {
+func calculateIntegerSummary(values []int64) Summary {
 	result := sharedCalcIntegerStats(values)
 
 	var lq NullablePrimitive[float64]

@@ -148,3 +148,4 @@ Output data types are dependent on the detected type of the input data.
 | Q1        m| float | float | date
 | Q3        m| float | float | date
 |===
+

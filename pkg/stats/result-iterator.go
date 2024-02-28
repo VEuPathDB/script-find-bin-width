@@ -30,6 +30,6 @@ func (r *ResultIterator) Next() (Result, error) {
 	return Result{
 		AttributeStableID: group.AttributeStableID,
 		EntityTypeID:      group.EntityTypeID,
-		Stats:             calculateStats(group.DataType, group.Values),
+		Stats:             calculateSummary(group.DataType, group.Values),
 	}, nil
 }
