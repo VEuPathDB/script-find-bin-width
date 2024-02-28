@@ -15,22 +15,6 @@ type MADResult struct {
 //
 // //
 
-// FD computes the number of bins for a histogram using the Freedman-Diaconis
-// method applied to the given set of observations.
-func FD[V float64 | int64](values []V) float64 {
-	iqr := IQR(values)
-
-	if iqr == 0 {
-		iqr = MAD(values).MAD
-	}
-
-	if iqr > 0 {
-		return math.Ceil(float64(Diff(Range(values))) / (2 * iqr * math.Pow(float64(len(values)), -1.0/3.0)))
-	}
-
-	return 1
-}
-
 func UpperQuartile[V float64 | int64](values []V) float64 {
 	ln := len(values)
 
@@ -116,27 +100,4 @@ func Median[V float64 | int64](values []V) float64 {
 	} else {
 		return float64(values[size/2])
 	}
-}
-
-func Moments_Skewness[V float64 | int64](x []V) (skew, mean float64) {
-	n := float64(len(x))
-	sum3 := 0.0
-	sum2 := 0.0
-
-	mean = Mean(x)
-
-	for _, f := range x {
-		tmp := float64(f) - mean
-		sum3 += tmp * tmp * tmp
-		sum2 += tmp * tmp
-	}
-
-	return (sum3 / n) / math.Pow(sum2/n, 3.0/2.0), mean
-}
-
-// Sturges computes the number of bins for a histogram using the Sturges
-// method applied to the given set of observations.
-func Sturges[V float64 | int64](values []V) float64 {
-	res := math.Ceil(1 + math.Log2(float64(len(values))))
-	return max(res, 1)
 }
