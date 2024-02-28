@@ -22,7 +22,7 @@ func findNumBins[V float64 | int64](values []V) int {
 	skewness, _ := xmath.Skewness(values)
 	absSkew := math.Abs(skewness)
 
-	// these data cant be normal, and so should use Doane's instead
+	// these data cant be normal, and so should use Doane's Formula instead
 	if absSkew > 0.5 {
 		numBins = xmath.Doane(absSkew, values)
 		setBins = true

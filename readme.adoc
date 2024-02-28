@@ -59,9 +59,13 @@ set, will cause the tool to read the input data from the target file rather than
 
 ===== Expectations
 
-Expects a series of int, float, or date¹ values either on `stdin`, or from a
-provided file, with each value being separated from the next by a single
-whitespace² character.
+Input is whitespace² delimited columnar data provided on `stdin` or in one or more files.  Columns are:
+
+ * Entity ID
+ * Variable ID
+ * value
+
+Values are either int, float, or date¹.  The input might be presorted by Entity ID and Variable ID, or not (as indicated in the CLI args).
 
 ¹ Dates must be in the RFC-3339 format or one of the following formats:
 `2023-11-01` or `2023-11-01T03:00:00` +
@@ -98,7 +102,19 @@ Defaults to `false`.
 
 === Output
 
-Outputs one of the following types based on the type of the input:
+The input is grouped by (Entity Id, Variable ID).  The values for a group are analyzed for a set of statistics.  The output is a set of stats per group, in the requested format.  The provided stats are:
+
+* min
+* max
+* binWidth
+* mean
+* median
+* lowerQuartile
+* upperQuartile
+* stringifier
+* dataType (int, float, date)
+		
+Output formats are:
 
 * 64-bit float bin width for float inputs
 * 64-bit integer bin width for int inputs
