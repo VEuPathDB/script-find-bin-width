@@ -1,9 +1,6 @@
 = Find Bin Width
 :icons: font
-:script-version: 0.5.3
-
-Golang port of the https://github.com/VEuPathDB/plot.data[plot.data] function
-`findBinWidth` and its call tree.
+:script-version: 1.0.0
 
 == Get the Script
 
@@ -27,23 +24,36 @@ $ curl https://github.com/VEuPathDB/script-find-bin-width/releases/download/v{sc
 [source]
 ----
 Usage:
-  find-bin-width [options] [file]
+  find-bin-width [options] [input files...]
+
+    Calculates various stats about a given stream of input data.
+
+    Input is expected to be in a headerless 3 column TSV format with the columns
+    'attribute_stable_id', 'entity_id', and 'value'.
+
+    Output will contain the fields 'min', 'max', 'bin_width', 'mean', 'median', 'lower_quartile',
+    and 'upper_quartile'.
+
+    Input may be passed either on stdin, or via a list of 1 or more file paths which will be read
+    and processed in the order they are passed.
 
 Flags
   -r | --rm-na
       Whether NA values (empty strings on input) should be ignored.  If this is not set, or is set
       to false, data sets containing NA values will result in an NA value being returned.
+
+      For JSON output types, NA values are represented as null.  For CSV/TSV output types, NA values
+      are represented as empty strings.
+  -s  | --sorted-inputs
+      Whether the input is pre-sorted.  If not set, or set to false, input will be fully consumed
+      and sorted in memory before processing.
   -f <arg> | --format=<arg>
-      Output format.  Valid options are tsv, csv, or json
+      Output format.  Valid options are tsv, csv, json, or jsonl
   -t | --headers
-      Whether the header/title line should be included in the output.  Only applies to tsv and csv
-      formats, ignored for json.
+      Whether the header/title line should be included in the output.  This option does not apply to
+      json output format.
   -h | --help
       Prints this help text.
-
-Arguments
-  [file]
-      File to read data from.  If omitted, data will be read from stdin.
 ----
 
 
@@ -51,26 +61,26 @@ Arguments
 
 ==== Data
 
-Data may be passed to the `find-bin-width` over `stdin` or provided via file.
-
-The command line call expects an optional filepath positional argument that, if
-set, will cause the tool to read the input data from the target file rather than
-`stdin`.
+Data may be passed to the `find-bin-width` over `stdin` or provided via one or
+more source files.
 
 ===== Expectations
 
-Input is whitespace² delimited columnar data provided on `stdin` or in one or more files.  Columns are:
+Input is tab (`\t`) delimited columnar data provided on `stdin` or in one or
+more files.  Columns are:
 
- * Entity ID
- * Variable ID
- * value
+* Variable ID
+* Entity ID
+* value
 
-Values are either int, float, or date¹.  The input might be presorted by Entity ID and Variable ID, or not (as indicated in the CLI args).
+Values are either int, float, or date¹.  The input might be presorted by
+Variable ID and Entity ID, or not (as indicated in the CLI args).  If the input
+is presorted, the tool will process the input data as a stream.  If the input is
+not presorted, the entirety of the input data will be consumed and sorted in
+memory before processing.
 
 ¹ Dates must be in the RFC-3339 format or one of the following formats:
 `2023-11-01` or `2023-11-01T03:00:00` +
-² Whitespace characters are space, tab, line feed (`\n`), carriage return
-(`\r`), or the combination `\r\n`.
 
 ==== Options
 
@@ -80,7 +90,7 @@ Values are either int, float, or date¹.  The input might be presorted by Entity
 | Flag | Argument | Description
 
 | -f \| --format
-| ENUM(tsv, csv, json)
+| ENUM(tsv, csv, json, jsonl)
 | Configures the output format in which the results will be printed to `stdout`.
 
 Defaults to `tsv`.
@@ -91,32 +101,50 @@ Defaults to `tsv`.
 set, or is set to false, data sets containing one or more NA values will result
 in a single NA value being returned from the CLI call.
 
+| -s \| --sorted-inputs
+| boolean
+| Indicates whether the input data is presorted on the Variable ID and Entity ID
+columns.
+
 | -t \| --headers
 | boolean
 | Include a header/title line in the output. +
 This option only applies to the `csv` and `tsv` formats and will be ignored for
-`json` output.
+`json` or `jsonl` output.
 
 Defaults to `false`.
 |===
 
 === Output
 
-The input is grouped by (Entity Id, Variable ID).  The values for a group are analyzed for a set of statistics.  The output is a set of stats per group, in the requested format.  The provided stats are:
+The input is grouped by (Variable ID, Entity ID).  The values for a group are
+analyzed for a set of statistics.  The output is a set of stats per group, in
+the requested format.  The provided stats are:
 
-* min
-* max
-* binWidth
-* mean
-* median
-* lowerQuartile
-* upperQuartile
-* stringifier
-* dataType (int, float, date)
-		
-Output formats are:
+. Minimum value from the input data set.
+. Maximum value from the input data set.
+. Calculated histogram bin width
+. Mean of the input data set.
+. Median of the input data set.
+. Lower or first quartile of the input data set.
+. Upper or third quartile of the input data set.
 
-* 64-bit float bin width for float inputs
-* 64-bit integer bin width for int inputs
-* "year", "month", "week", or "day" for date inputs
-* An empty string for NA results.
+Upper and lower quartile values will be empty for input data groups containing
+less than 4 values.
+
+==== Types
+
+Output data types are dependent on the detected type of the input data.
+
+[%header]
+|===
+| Column  3+| Input Data Type
+|          h| int h| float h| date
+| Minimum   m| int  | float  | date
+| Maximum   m| int  | float  | date
+| Bin Width m| int  | float  | ENUM(day\|week\|month\|year)
+| Mean      m| float | float | date
+| Median    m| float | float | date
+| Q1        m| float | float | date
+| Q3        m| float | float | date
+|===
