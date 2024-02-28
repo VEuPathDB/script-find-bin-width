@@ -19,15 +19,12 @@ func findNumBins[V float64 | int64](values []V) int {
 	}
 
 	// this metric should give us a sense for normalcy
-	skewness, _ := xmath.Moments_Skewness(values)
+	skewness, _ := xmath.Skewness(values)
 	absSkew := math.Abs(skewness)
 
 	// these data cant be normal, and so should use Doane's Formula instead
 	if absSkew > 0.5 {
-		n := float64(len(values))
-		se := math.Sqrt(6 * (n - 2) / ((n + 1) * (n + 3)))
-		ke := math.Log2(1 + absSkew/se)
-		numBins = math.Ceil(xmath.Sturges(values) + ke)
+		numBins = xmath.Doane(absSkew, values)
 		setBins = true
 	}
 
