@@ -84,16 +84,14 @@ func validateShortDateTime(value string) uint8 {
 }
 
 func validateTimestamp(value string) bool {
-	// If we're here then we know that the length of the value is > 20 and the
-	// 19th character is a '.'
 	l := len(value)
 
-	if l > 36 {
+	if l < 21 || l > 36 || value[19] != '.' {
 		return false
 	}
 
 	i := 20
-	for ; i < 36; i++ {
+	for ; i < l; i++ {
 		if !xutil.CharIsNumeric(value[i]) {
 			break
 		}
