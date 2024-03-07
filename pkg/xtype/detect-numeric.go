@@ -38,7 +38,7 @@ func attemptNumeric(value string) DataType {
 }
 
 func _valueIsInt(val string) (res detectNumberResult, idx int) {
-	if val[idx] == '-' {
+	if val[idx] == '-' || val[idx] == '+' {
 		idx++
 
 		if idx == len(val) {
