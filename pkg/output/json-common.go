@@ -73,7 +73,12 @@ func (j jsonFormatCommon) writeKey(index int, row Formattable) {
 func (j jsonFormatCommon) writeValue(index int, row Formattable) {
 	switch row.GetFieldType(index) {
 	case FieldTypeNumeric:
-		xos.BufWriteBytes(j.stream, j.valBuf[:row.WriteFieldValue(index, &j.valBuf)])
+		tmp := j.valBuf[:row.WriteFieldValue(index, &j.valBuf)]
+		if len(tmp) == 0 {
+			xos.BufWriteString(j.stream, "null")
+		} else {
+			xos.BufWriteBytes(j.stream, tmp)
+		}
 	case FieldTypeText:
 		j.writeQuoted(j.valBuf[:row.WriteFieldValue(index, &j.valBuf)])
 	case FieldTypeBoolean:

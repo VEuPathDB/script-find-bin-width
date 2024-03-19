@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"find-bin-width/pkg/xos"
+	"find-bin-width/pkg/xutil"
 )
 
 type JsonOutputStyle uint8
@@ -61,6 +62,7 @@ func (j jsonAOO) Write(result Formattable) {
 
 func (j jsonAOO) Finalize() {
 	xos.BufWriteByte(j.stream, ']')
+	xutil.Must(j.stream.Flush())
 }
 
 type jsonAOANHR struct{ jsonFormatCommon }
@@ -75,6 +77,7 @@ func (j jsonAOANHR) Write(row Formattable) {
 
 func (j jsonAOANHR) Finalize() {
 	xos.BufWriteByte(j.stream, ']')
+	xutil.Must(j.stream.Flush())
 }
 
 type jsonAOAWHR struct {
@@ -96,4 +99,5 @@ func (j jsonAOAWHR) Write(result Formattable) {
 
 func (j jsonAOAWHR) Finalize() {
 	xos.BufWriteByte(j.stream, ']')
+	xutil.Must(j.stream.Flush())
 }

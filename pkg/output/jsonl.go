@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"find-bin-width/pkg/xos"
+	"find-bin-width/pkg/xutil"
 )
 
 type JsonLineFormat uint8
@@ -122,5 +123,5 @@ func (j *jsonlArrayFormatter) Write(result Formattable) {
 }
 
 func (j *jsonlArrayFormatter) Finalize() {
-	// Do nothing.
+	xutil.Must(j.stream.Flush())
 }

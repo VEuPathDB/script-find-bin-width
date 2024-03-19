@@ -6,7 +6,7 @@ type FieldNameBuffer = [64]byte
 
 // FieldValueBuffer defines the type used as a buffer to hold field values to be
 // written to an output stream.
-type FieldValueBuffer = [256]byte
+type FieldValueBuffer = [512]byte
 
 // FieldType used to indicate the output type for a specified field.
 type FieldType uint8
